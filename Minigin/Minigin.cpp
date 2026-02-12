@@ -10,11 +10,15 @@
 #include <SDL3/SDL.h>
 //#include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
+
+
 #include "Minigin.h"
 #include "InputManager.h"
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include <chrono>
+#include <thread>
 
 SDL_Window* g_window{};
 
@@ -96,11 +100,49 @@ void dae::Minigin::Run(const std::function<void()>& load)
 #else
 	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
 #endif
+
+	
 }
 
 void dae::Minigin::RunOneFrame()
 {
-	m_quit = !InputManager::GetInstance().ProcessInput();
+	auto& renderer = Renderer::GetInstance();
+	auto& sceneManager = SceneManager::GetInstance();
+	auto& input = InputManager::GetInstance();
+
+	bool do_continue = true;
+	auto last_time = std::chrono::high_resolution_clock::now();
+	float lag = 0.0f;
+	long ms_per_frame = 16;
+	float fixed_time_step = 0.02f;
+
+	while (do_continue)
+	{
+		const auto current_time = std::chrono::high_resolution_clock::now();
+		const float delta_time = std::chrono::duration<float>(current_time - last_time).count();
+		last_time = current_time;
+		lag += delta_time;
+
+		do_continue = input.ProcessInput();
+
+		while (lag >= fixed_time_step)
+		{
+			sceneManager.FixedUpdate(fixed_time_step);
+			lag -= fixed_time_step;
+		}
+
+
+		sceneManager.Update(delta_time);
+		renderer.Render();
+		const auto sleep_time = current_time + std::chrono::milliseconds(ms_per_frame) - std::chrono::high_resolution_clock::now();
+		std::this_thread::sleep_for(sleep_time);
+
+
+		//sceneManager.LateUpdate();
+
+
+	}
+	/*m_quit = !InputManager::GetInstance().ProcessInput();
 	SceneManager::GetInstance().Update();
-	Renderer::GetInstance().Render();
+	Renderer::GetInstance().Render();*/
 }
