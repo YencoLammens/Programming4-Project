@@ -139,7 +139,7 @@ void dae::Minigin::RunOneFrame()
 
 
 		//sceneManager.LateUpdate();
-
+		
 
 	}
 	/*m_quit = !InputManager::GetInstance().ProcessInput();
