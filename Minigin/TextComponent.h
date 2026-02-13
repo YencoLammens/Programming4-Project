@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <memory>
+#include <SDL3/SDL.h>
 #include "GameObject.h"
 #include "BaseComponent.h"
 #include "IRenderable.h"

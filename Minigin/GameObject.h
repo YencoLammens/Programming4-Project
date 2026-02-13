@@ -9,7 +9,7 @@
 namespace dae
 {
 	class TransformComponent;
-	class GameObject 
+	class GameObject final
 	{
 	public:
 

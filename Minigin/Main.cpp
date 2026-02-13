@@ -12,8 +12,8 @@
 #include "Scene.h"
 #include "GameObject.h"
 #include "TransformComponent.h"
-#include "TextComponent.h"
 #include "RenderComponent.h"
+#include "FPSComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -40,6 +40,14 @@ static void load()
 	renderComponent->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("logo.png"));
 	go->AddComponent(std::move(renderComponent));
 	go->GetTransform()->SetLocalPosition(358, 180, 0);
+	scene.Add(std::move(go));
+
+	go = std::make_unique<dae::GameObject>();
+	auto fpsComponent = std::make_unique<dae::FPSComponent>(go.get());
+	textComponent = std::make_unique<dae::TextComponent>(go.get(), "FPS: ", font.get());
+	go->GetTransform()->SetLocalPosition(10, 10, 0);
+	go->AddComponent(std::move(textComponent));
+	go->AddComponent(std::move(fpsComponent));
 	scene.Add(std::move(go));
 }
 
