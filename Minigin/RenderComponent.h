@@ -23,11 +23,11 @@ namespace dae
 		virtual void FixedUpdate(float fixedTimeStep) override;
 		virtual void Render() const;
 
-		void SetTexture(const std::shared_ptr<Texture2D>& texture);
+		void SetTexture(Texture2D* texture);
 		void SetEnabled(bool enabled) { m_enabled = enabled; }
 
 	private:
-		std::shared_ptr<Texture2D> m_texture;
+		Texture2D* m_texture;
 		SDL_Rect m_sourceRect{};
 		glm::vec3 m_position;
 

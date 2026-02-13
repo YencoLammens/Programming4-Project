@@ -30,7 +30,7 @@ namespace dae
 	private:
 		bool m_needsUpdate;
 		std::string m_text;
-		std::shared_ptr<Font> m_font;
+		Font* m_font;
 		std::unique_ptr<Texture2D> m_textTexture;
 		SDL_Color m_color{ 255, 255, 255, 255 };
 	};

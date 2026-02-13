@@ -8,7 +8,7 @@
 #include "TransformComponent.h"
 
 dae::TextComponent::TextComponent(GameObject* owner, const std::string& text, Font* font)
-	: BaseComponent(owner), m_text(text), m_font(std::move(font)), m_needsUpdate(true)
+	: BaseComponent(owner), m_text(text), m_font(font), m_needsUpdate(true)
 {
 
 }
