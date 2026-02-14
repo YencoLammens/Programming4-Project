@@ -21,7 +21,7 @@ namespace dae
 		RenderComponent& operator=(RenderComponent&&) = delete;
 		virtual void Update(float deltaTime) override;
 		virtual void FixedUpdate(float fixedTimeStep) override;
-		virtual void Render() const;
+		virtual void Render() const override;
 
 		void SetTexture(Texture2D* texture);
 		void SetEnabled(bool enabled) { m_enabled = enabled; }

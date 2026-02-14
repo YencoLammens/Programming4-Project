@@ -100,34 +100,13 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	m_lag = 0.0f;
 	while (!m_quit)
 	{
-		const auto currentTime = std::chrono::high_resolution_clock::now();
-		const float deltaTime = std::chrono::duration<float>(currentTime - m_lastTime).count();
-		m_lastTime = currentTime;
-		m_lag += deltaTime;
-
-		m_quit = !InputManager::GetInstance().ProcessInput();
-
-		const float MS_PER_UPDATE = 0.02f;
-		while (m_lag >= MS_PER_UPDATE)
-		{
-			SceneManager::GetInstance().FixedUpdate(MS_PER_UPDATE);
-			m_lag -= MS_PER_UPDATE;
-		}
-
-		SceneManager::GetInstance().Update(deltaTime);
-		SceneManager::GetInstance().RemoveFlaggedObjects();
-		Renderer::GetInstance().Render();
-
-		const auto sleepTime = currentTime + std::chrono::milliseconds(16) - std::chrono::high_resolution_clock::now();
-		if (sleepTime.count() > 0)
-		{
-			std::this_thread::sleep_for(sleepTime);
-		}
+		RunOneFrame();
 	}
 #else
 	emscripten_set_main_loop_arg(&LoopCallback, this, 0, true);
 #endif
 }
+
 
 void dae::Minigin::RunOneFrame()
 {
@@ -146,5 +125,14 @@ void dae::Minigin::RunOneFrame()
 	}
 
 	SceneManager::GetInstance().Update(deltaTime);
+	SceneManager::GetInstance().RemoveFlaggedObjects();
 	Renderer::GetInstance().Render();
+
+#ifndef __EMSCRIPTEN__
+	const auto sleepTime = currentTime + std::chrono::milliseconds(16) - std::chrono::high_resolution_clock::now();
+	if (sleepTime.count() > 0)
+	{
+		std::this_thread::sleep_for(sleepTime);
+	}
+#endif
 }
