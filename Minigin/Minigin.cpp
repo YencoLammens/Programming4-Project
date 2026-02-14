@@ -98,7 +98,6 @@ void dae::Minigin::Run(const std::function<void()>& load)
 #ifndef __EMSCRIPTEN__
 	m_lastTime = std::chrono::high_resolution_clock::now();
 	m_lag = 0.0f;
-
 	while (!m_quit)
 	{
 		const auto currentTime = std::chrono::high_resolution_clock::now();
@@ -116,6 +115,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		}
 
 		SceneManager::GetInstance().Update(deltaTime);
+		SceneManager::GetInstance().RemoveFlaggedObjects();
 		Renderer::GetInstance().Render();
 
 		const auto sleepTime = currentTime + std::chrono::milliseconds(16) - std::chrono::high_resolution_clock::now();

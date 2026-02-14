@@ -26,6 +26,18 @@ void dae::SceneManager::Render()
 	}
 }
 
+void dae::SceneManager::RemoveFlaggedObjects()
+{
+	if (!m_hasDeletionsPending) return; //prevent it from unecessarily looping through everything if no deletion is necessary
+
+	for (auto& scene : m_scenes)
+	{
+		scene->RemoveFlaggedObjects();
+	}
+
+	m_hasDeletionsPending = false;
+}
+
 dae::Scene& dae::SceneManager::CreateScene()
 {
 	m_scenes.emplace_back(new Scene());

@@ -16,9 +16,14 @@ namespace dae
 		void Update(float deltaTime);
 		void FixedUpdate(float fixedTimeStep);
 		void Render();
+
+		void RemoveFlaggedObjects();
+		void SetDeletionPending() { m_hasDeletionsPending = true; }
+
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
 		std::vector<std::unique_ptr<Scene>> m_scenes{};
+		bool m_hasDeletionsPending = false;
 	};
 }

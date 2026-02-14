@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "BaseComponent.h"
 #include "TransformComponent.h"
+#include "SceneManager.h"
 
 dae::GameObject::GameObject() 
     :m_worldPosition(0.0f, 0.0f, 0.0f), m_localPosition(0.0f, 0.0f, 0.0f), m_transform(std::make_unique<TransformComponent>(this))
@@ -128,6 +129,7 @@ std::vector<dae::GameObject*> dae::GameObject::GetChildren()
 void dae::GameObject::MarkForDeletion()
 {
     m_toBeDeleted = true;
+    SceneManager::GetInstance().SetDeletionPending();
 
     for (auto& child : m_childrenArr)
     {
@@ -142,18 +144,17 @@ void dae::GameObject::MarkForDeletion()
 
 void dae::GameObject::RemoveFlaggedComponents()
 {
+    if (!m_mustAComponentBeDeleted) return;
 
-    /*if (GameObject::GetComponent<dae::RenderComponent>())
-    {
-        dae::Renderer::GetInstance().RemoveRenderComponent(GameObject::GetComponent<dae::RenderComponent>());
-    }*/
+    SceneManager::GetInstance().SetDeletionPending();
 
     for (unsigned int idx{ 0 }; idx < m_componentsArr.size(); ++idx)
     {
         if (m_componentsArr[idx]->IsMarkedForDeletion())
         {
             m_componentsArr.erase(m_componentsArr.begin() + idx);
-            --idx; //to make sure the index doesn't go out of bounds and iterates over every element
+            --idx;
         }
     }
+    m_mustAComponentBeDeleted = false;
 }

@@ -26,6 +26,23 @@ void Scene::RemoveAll()
 	m_objects.clear();
 }
 
+void Scene::RemoveFlaggedObjects()
+{
+	for (auto& object : m_objects)
+	{
+		object->RemoveFlaggedComponents();
+	}
+
+	for (size_t idx = 0; idx < m_objects.size(); ++idx)
+	{
+		if (m_objects[idx]->IsMarkedForDeletion())
+		{
+			m_objects.erase(m_objects.begin() + idx);
+			--idx;
+		}
+	}
+}
+
 void Scene::Update(float deltaTime)
 {
 	for(auto& object : m_objects)
