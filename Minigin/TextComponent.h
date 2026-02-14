@@ -22,7 +22,7 @@ namespace dae
 
 		void Update(float deltaTime) override;
 		void FixedUpdate(float) override {};
-		void Render() const;
+		void Render() const override;
 
 		void SetText(const std::string& text);
 
