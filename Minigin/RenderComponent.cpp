@@ -27,7 +27,7 @@ void dae::RenderComponent::FixedUpdate(float)
 
 void dae::RenderComponent::Render() const
 {
-	if (!m_texture /*|| !m_enabled*/) return;
+	if (!m_texture || !m_enabled) return;
 
 	auto* transform = GetOwner()->GetTransform();
 	const auto pos = transform->GetWorldPosition();
