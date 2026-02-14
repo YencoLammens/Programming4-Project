@@ -4,7 +4,7 @@
 #include "TransformComponent.h"
 
 dae::RenderComponent::RenderComponent(GameObject* owner)
-	: BaseComponent(owner), m_position{ 0, 0, 0 }, m_texture(nullptr)
+	: BaseComponent(owner), m_texture(nullptr), m_position{ 0, 0, 0 }
 {
 		//auto& renderer = Renderer::GetInstance();
 
@@ -27,7 +27,7 @@ void dae::RenderComponent::FixedUpdate(float)
 
 void dae::RenderComponent::Render() const
 {
-	if (!m_texture || !m_enabled) return;
+	if (!m_texture /*|| !m_enabled*/) return;
 
 	auto* transform = GetOwner()->GetTransform();
 	const auto pos = transform->GetWorldPosition();
