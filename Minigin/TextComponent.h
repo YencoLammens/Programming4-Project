@@ -10,7 +10,7 @@ namespace dae
 {
 	class Font;
 	class Texture2D;
-	class TextComponent : public BaseComponent, public IRenderable
+	class TextComponent final: public BaseComponent, public IRenderable
 	{
 	public:
 		TextComponent(GameObject* owner, const std::string& text, Font* font);
@@ -20,8 +20,8 @@ namespace dae
 		TextComponent& operator=(const TextComponent& other) = delete;
 		TextComponent& operator=(TextComponent&& other) = delete;
 
-		void Update(float deltaTime) override;
-		void FixedUpdate(float) override {};
+		void Update(const float deltaTime) override;
+		void FixedUpdate(const float) override {};
 		void Render() const override;
 
 		void SetText(const std::string& text);

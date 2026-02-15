@@ -10,7 +10,7 @@ dae::FPSComponent::FPSComponent(GameObject* owner)
     m_pTextComponent = GetOwner()->GetComponent<TextComponent>();
 }
 
-void dae::FPSComponent::Update(float deltaTime)
+void dae::FPSComponent::Update(const float deltaTime)
 {
     m_accumulatedTime += deltaTime;
     ++m_frameCount;

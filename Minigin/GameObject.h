@@ -20,8 +20,8 @@ namespace dae
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
-		void Update(float deltaTime);
-		void FixedUpdate(float fixedTimeStep);
+		void Update(const float deltaTime);
+		void FixedUpdate(const float fixedTimeStep);
 		void Render() const;
 
 		void AddComponent(std::unique_ptr<BaseComponent> component);

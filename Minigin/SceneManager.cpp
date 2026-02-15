@@ -1,7 +1,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-void dae::SceneManager::Update(float deltaTime)
+void dae::SceneManager::Update(const float deltaTime)
 {
 	for(auto& scene : m_scenes)
 	{
@@ -9,7 +9,7 @@ void dae::SceneManager::Update(float deltaTime)
 	}
 }
 
-void dae::SceneManager::FixedUpdate(float fixedTimeStep)
+void dae::SceneManager::FixedUpdate(const float fixedTimeStep)
 {
 	for(auto& scene : m_scenes)
 	{

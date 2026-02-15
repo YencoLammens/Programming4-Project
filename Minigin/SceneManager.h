@@ -13,8 +13,8 @@ namespace dae
 	public:
 		Scene& CreateScene();
 
-		void Update(float deltaTime);
-		void FixedUpdate(float fixedTimeStep);
+		void Update(const float deltaTime);
+		void FixedUpdate(const float fixedTimeStep);
 		void Render();
 
 		void RemoveFlaggedObjects();

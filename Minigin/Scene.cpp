@@ -43,7 +43,7 @@ void Scene::RemoveFlaggedObjects()
 	}
 }
 
-void Scene::Update(float deltaTime)
+void Scene::Update(const float deltaTime)
 {
 	for(auto& object : m_objects)
 	{
@@ -51,7 +51,7 @@ void Scene::Update(float deltaTime)
 	}
 }
 
-void Scene::FixedUpdate(float fixedTimeStep)
+void Scene::FixedUpdate(const float fixedTimeStep)
 {
 	for (auto& object : m_objects)
 	{

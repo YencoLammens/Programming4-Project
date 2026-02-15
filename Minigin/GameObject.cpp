@@ -13,7 +13,7 @@ dae::GameObject::GameObject()
 
 dae::GameObject::~GameObject() = default;
 
-void dae::GameObject::Update(float deltaTime)
+void dae::GameObject::Update(const float deltaTime)
 {
     for (auto& component : m_componentsArr)
     {
@@ -21,7 +21,7 @@ void dae::GameObject::Update(float deltaTime)
     }
 }
 
-void dae::GameObject::FixedUpdate(float fixedTimeStep)
+void dae::GameObject::FixedUpdate(const float fixedTimeStep)
 {
     for (auto& component : m_componentsArr)
     {

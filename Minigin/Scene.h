@@ -14,8 +14,8 @@ namespace dae
 		void RemoveAll();
 		void RemoveFlaggedObjects();
 
-		void Update(float deltaTime);
-		void FixedUpdate(float fixedTimeStep);
+		void Update(const float deltaTime);
+		void FixedUpdate(const float fixedTimeStep);
 		void Render() const;
 
 		~Scene() = default;

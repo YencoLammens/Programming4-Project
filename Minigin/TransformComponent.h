@@ -5,7 +5,7 @@
 namespace dae
 {
 	class GameObject;
-	class TransformComponent : public BaseComponent
+	class TransformComponent final: public BaseComponent
 	{
 	public:
 		TransformComponent(GameObject* parent);
@@ -20,8 +20,8 @@ namespace dae
 		/*void SetRotation(float angleDegrees);
 		float GetRotation() const;*/
 
-		void Update(float deltaTime) override;
-		void FixedUpdate(float fixedTimeStep) override;
+		void Update(const float deltaTime) override;
+		void FixedUpdate(const float fixedTimeStep) override;
 
 
 	private:
