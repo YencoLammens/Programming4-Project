@@ -15,6 +15,7 @@ namespace dae
 		virtual void Update(const float deltaTime) = 0;
 		virtual void FixedUpdate(const float fixedTimeStep) = 0;
 		virtual void LateUpdate() {};
+		virtual void Render() const {};
 
 		void MarkForDeletion() { m_toBeDeleted = true; };
 		bool IsMarkedForDeletion() { return m_toBeDeleted; }

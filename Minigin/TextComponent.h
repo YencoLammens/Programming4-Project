@@ -4,13 +4,12 @@
 #include <SDL3/SDL.h>
 #include "GameObject.h"
 #include "BaseComponent.h"
-#include "IRenderable.h"
 
 namespace dae
 {
 	class Font;
 	class Texture2D;
-	class TextComponent final: public BaseComponent, public IRenderable
+	class TextComponent final: public BaseComponent
 	{
 	public:
 		TextComponent(GameObject* owner, const std::string& text, Font* font);

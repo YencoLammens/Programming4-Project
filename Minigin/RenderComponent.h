@@ -5,12 +5,11 @@
 #include <glm/vec3.hpp>
 #include "BaseComponent.h"
 #include "Texture2D.h"
-#include "IRenderable.h"
 
 
 namespace dae
 {
-	class RenderComponent final: public BaseComponent, public IRenderable
+	class RenderComponent final: public BaseComponent
 	{
 	public:
 		RenderComponent(GameObject* owner);

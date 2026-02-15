@@ -33,10 +33,7 @@ void dae::GameObject::Render() const
 {
     for (const auto& component : m_componentsArr)
     {
-        if (auto* renderable = dynamic_cast<IRenderable*>(component.get()))
-        {
-            renderable->Render();
-        }
+        component->Render();
     }
 }
 
