@@ -24,10 +24,19 @@ namespace dae
 		void FixedUpdate(const float fixedTimeStep);
 		void Render() const;
 
-		void AddComponent(std::unique_ptr<BaseComponent> component);
+		//void AddComponent(std::unique_ptr<BaseComponent> component);
+		template <typename T, typename... Args>
+		T* AddComponent(Args&&... args)
+		{
+			static_assert(std::is_base_of<BaseComponent, T>::value, "T must derive from BaseComponent");
+
+			auto component = std::make_unique<T>(this, std::forward<Args>(args)...);
+			T* componentPtr = component.get();
+			m_componentsArr.emplace_back(std::move(component));
+			return componentPtr;
+		}
 		void RemoveComponent(BaseComponent* baseComponent);
 
-		//Templates
 		template <typename T>
 		T HasComponentBeenAdded() const
 		{

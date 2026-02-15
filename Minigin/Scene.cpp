@@ -3,9 +3,9 @@
 
 using namespace dae;
 
-void Scene::Add(std::unique_ptr<GameObject> object)
+void Scene::Add(std::unique_ptr<GameObject>&& object)
 {
-	//assert(object != nullptr && "Cannot add a null GameObject to the scene.");
+	assert(object != nullptr && "Cannot add a null GameObject to the scene.");
 	m_objects.emplace_back(std::move(object));
 }
 
@@ -33,12 +33,12 @@ void Scene::RemoveFlaggedObjects()
 		object->RemoveFlaggedComponents();
 	}
 
-	for (size_t idx = 0; idx < m_objects.size(); ++idx)
+	//Reverse iteration
+	for (int idx = static_cast<int>(m_objects.size()) - 1; idx >= 0; --idx)
 	{
 		if (m_objects[idx]->IsMarkedForDeletion())
 		{
 			m_objects.erase(m_objects.begin() + idx);
-			--idx;
 		}
 	}
 }

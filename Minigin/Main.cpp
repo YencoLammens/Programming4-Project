@@ -23,31 +23,26 @@ static void load()
 	auto& scene = dae::SceneManager::GetInstance().CreateScene();
 	
 	auto go = std::make_unique<dae::GameObject>();
-	auto renderComponent = std::make_unique<dae::RenderComponent>(go.get());
+	auto* renderComponent = go->AddComponent<dae::RenderComponent>();  // auto* not auto&
 	renderComponent->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("background.png"));
-	go->AddComponent(std::move(renderComponent));
 	scene.Add(std::move(go));
 
 	go = std::make_unique<dae::GameObject>();
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	auto textComponent = std::make_unique<dae::TextComponent>(go.get(), "Programming 4 Assignment", font);
 	go->GetTransform()->SetLocalPosition(80, 80, 0);
-	go->AddComponent(std::move(textComponent));
+	go->AddComponent<dae::TextComponent>("Programming 4 Assignment", font);
 	scene.Add(std::move(go));
 
 	go = std::make_unique<dae::GameObject>();
-	renderComponent = std::make_unique<dae::RenderComponent>(go.get());
-	renderComponent->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("logo.png"));
-	go->AddComponent(std::move(renderComponent));
+	auto* renderComponent2 = go->AddComponent<dae::RenderComponent>();  // New variable name
+	renderComponent2->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("logo.png"));
 	go->GetTransform()->SetLocalPosition(358, 180, 0);
 	scene.Add(std::move(go));
 
 	go = std::make_unique<dae::GameObject>();
-	auto fpsComponent = std::make_unique<dae::FPSComponent>(go.get());
-	textComponent = std::make_unique<dae::TextComponent>(go.get(), "FPS: ", font);
 	go->GetTransform()->SetLocalPosition(10, 10, 0);
-	go->AddComponent(std::move(textComponent));
-	go->AddComponent(std::move(fpsComponent));
+	go->AddComponent<dae::TextComponent>("FPS: ", font);
+	go->AddComponent<dae::FPSComponent>();
 	scene.Add(std::move(go));
 }
 

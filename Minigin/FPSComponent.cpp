@@ -18,6 +18,7 @@ void dae::FPSComponent::Update(const float deltaTime)
     if (m_accumulatedTime >= m_updateInterval)
     {
         const float fps = static_cast<float>(m_frameCount) / m_accumulatedTime;
+        //GetOwner()->SendMessage("FPSUpdated", m_fps);
 
         std::stringstream ss;
         ss << "FPS: " << std::fixed << std::setprecision(1) << fps;

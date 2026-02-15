@@ -37,10 +37,10 @@ void dae::GameObject::Render() const
     }
 }
 
-void dae::GameObject::AddComponent(std::unique_ptr<BaseComponent> component)
-{
-	m_componentsArr.push_back(std::move(component));
-}
+//void dae::GameObject::AddComponent(std::unique_ptr<BaseComponent> component)
+//{
+//	m_componentsArr.push_back(std::move(component));
+//}
 
 void dae::GameObject::RemoveComponent(BaseComponent* toBeDeletedComponent)
 {
@@ -139,19 +139,34 @@ void dae::GameObject::MarkForDeletion()
     }
 }
 
+//void dae::GameObject::RemoveFlaggedComponents()
+//{
+//    if (!m_mustAComponentBeDeleted) return;
+//
+//    for (unsigned int idx{ 0 }; idx < m_componentsArr.size(); ++idx)
+//    {
+//        if (m_componentsArr[idx]->IsMarkedForDeletion())
+//        {
+//            m_componentsArr.erase(m_componentsArr.begin() + idx);
+//            --idx;
+//        }
+//    }
+//    m_mustAComponentBeDeleted = false;
+//}
+
 void dae::GameObject::RemoveFlaggedComponents()
 {
     if (!m_mustAComponentBeDeleted) return;
 
     SceneManager::GetInstance().SetDeletionPending();
 
-    for (unsigned int idx{ 0 }; idx < m_componentsArr.size(); ++idx)
+    for (int idx = static_cast<int>(m_componentsArr.size()) - 1; idx >= 0; --idx)
     {
         if (m_componentsArr[idx]->IsMarkedForDeletion())
         {
             m_componentsArr.erase(m_componentsArr.begin() + idx);
-            --idx;
         }
     }
+
     m_mustAComponentBeDeleted = false;
 }
