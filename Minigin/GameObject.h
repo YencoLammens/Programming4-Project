@@ -38,11 +38,11 @@ namespace dae
 		void RemoveComponent(BaseComponent* baseComponent);
 
 		template <typename T>
-		T HasComponentBeenAdded() const
+		bool HasComponent() const 
 		{
 			for (const auto& component : m_componentsArr)
 			{
-				if (dynamic_cast<T>(component))
+				if (dynamic_cast<T*>(component.get()))
 				{
 					return true;
 				}
@@ -64,7 +64,7 @@ namespace dae
 			return nullptr;
 		}
 
-		TransformComponent* GetTransform();
+		TransformComponent* GetTransform() const;
 
 		void SetParent(GameObject* parent, bool keepWorldPosition);
 		GameObject* GetParent();
@@ -87,8 +87,6 @@ namespace dae
 		std::vector<GameObject*> m_childrenArr;
 		GameObject* m_parent{ nullptr };
 
-		glm::vec3 m_worldPosition{};
-		glm::vec3 m_localPosition{};
 		std::unique_ptr<TransformComponent> m_transform;
 
 		bool m_mustAComponentBeDeleted = false;

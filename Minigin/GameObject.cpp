@@ -7,7 +7,7 @@
 #include "SceneManager.h"
 
 dae::GameObject::GameObject() 
-    :m_worldPosition(0.0f, 0.0f, 0.0f), m_localPosition(0.0f, 0.0f, 0.0f), m_transform(std::make_unique<TransformComponent>(this))
+    :m_transform(std::make_unique<TransformComponent>(this))
 {
 }
 
@@ -57,7 +57,7 @@ void dae::GameObject::RemoveComponent(BaseComponent* toBeDeletedComponent)
 
 }
 
-dae::TransformComponent* dae::GameObject::GetTransform()
+dae::TransformComponent* dae::GameObject::GetTransform() const
 {
     return m_transform.get();
 }
@@ -93,29 +93,44 @@ void dae::GameObject::AddChild(GameObject* newChild)
     m_childrenArr.push_back(newChild);
 }
 
-void dae::GameObject::RemoveChild(GameObject* orphanedChild)
-{
-    for (unsigned int idx{ 0 }; idx < m_childrenArr.size(); ++idx)
-    {
-        if (m_childrenArr[idx] == orphanedChild)
-        {
-            m_childrenArr[idx]->SetParent(nullptr, true);
-            m_childrenArr.erase(m_childrenArr.begin() + idx);
-            return;
-        }
-    }
-}
+//void dae::GameObject::RemoveChild(GameObject* orphanedChild)
+//{
+//    for (unsigned int idx{ 0 }; idx < m_childrenArr.size(); ++idx)
+//    {
+//        if (m_childrenArr[idx] == orphanedChild)
+//        {
+//            m_childrenArr[idx]->SetParent(nullptr, true);
+//            m_childrenArr.erase(m_childrenArr.begin() + idx);
+//            return;
+//        }
+//    }
+//}
+//
+//bool dae::GameObject::IsChild(GameObject* possibleChild) const
+//{
+//    for (unsigned int idx{ 0 }; idx < m_childrenArr.size(); ++idx)
+//    {
+//        if (m_childrenArr[idx] == possibleChild)
+//        {
+//            return true;
+//        }
+//    }
+//    return false;
+//}
 
 bool dae::GameObject::IsChild(GameObject* possibleChild) const
 {
-    for (unsigned int idx{ 0 }; idx < m_childrenArr.size(); ++idx)
+    return std::find(m_childrenArr.begin(), m_childrenArr.end(), possibleChild) != m_childrenArr.end();
+}
+
+void dae::GameObject::RemoveChild(GameObject* orphanedChild)
+{
+    auto it = std::find(m_childrenArr.begin(), m_childrenArr.end(), orphanedChild);
+    if (it != m_childrenArr.end())
     {
-        if (m_childrenArr[idx] == possibleChild)
-        {
-            return true;
-        }
+        (*it)->SetParent(nullptr, true);
+        m_childrenArr.erase(it);
     }
-    return false;
 }
 
 std::vector<dae::GameObject*> dae::GameObject::GetChildren()
