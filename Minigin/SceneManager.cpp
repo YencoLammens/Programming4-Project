@@ -7,6 +7,13 @@ void dae::SceneManager::Update(const float deltaTime)
 	{
 		scene->Update(deltaTime);
 	}
+
+	// TODO: move into LateUpdate() once added, same as component cleanup
+	if (m_hasDeletionsPending)
+	{
+		RemoveFlaggedObjects();
+		m_hasDeletionsPending = false;
+	}
 }
 
 void dae::SceneManager::FixedUpdate(const float fixedTimeStep)

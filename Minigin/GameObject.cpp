@@ -19,6 +19,11 @@ void dae::GameObject::Update(const float deltaTime)
     {
         component->Update(deltaTime);
     }
+
+   
+    
+   RemoveFlaggedComponents(); //Move to Scene level behind LateUpdate() once added!
+	
 }
 
 void dae::GameObject::FixedUpdate(const float fixedTimeStep)
@@ -128,7 +133,7 @@ void dae::GameObject::RemoveChild(GameObject* orphanedChild)
     auto it = std::find(m_childrenArr.begin(), m_childrenArr.end(), orphanedChild);
     if (it != m_childrenArr.end())
     {
-        (*it)->SetParent(nullptr, true);
+        (*it)->m_parent = nullptr;
         m_childrenArr.erase(it);
     }
 }
@@ -143,9 +148,10 @@ void dae::GameObject::MarkForDeletion()
     m_toBeDeleted = true;
     SceneManager::GetInstance().SetDeletionPending();
 
-    for (auto& child : m_childrenArr)
+    auto childrenCopy = m_childrenArr; //Prevent undefined behaviour
+    for (auto& child : childrenCopy)
     {
-        this->RemoveChild(child);
+        RemoveChild(child);
     }
 
     for (auto& component : m_componentsArr)
@@ -172,8 +178,6 @@ void dae::GameObject::MarkForDeletion()
 void dae::GameObject::RemoveFlaggedComponents()
 {
     if (!m_mustAComponentBeDeleted) return;
-
-    SceneManager::GetInstance().SetDeletionPending();
 
     for (int idx = static_cast<int>(m_componentsArr.size()) - 1; idx >= 0; --idx)
     {

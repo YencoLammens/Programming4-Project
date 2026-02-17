@@ -44,6 +44,9 @@ static void load()
 	go->AddComponent<dae::TextComponent>("FPS: ", font);
 	go->AddComponent<dae::FPSComponent>();
 	scene.Add(std::move(go));
+	scene.RemoveAll();
+
+	
 }
 
 int main(int, char*[]) {
