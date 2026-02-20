@@ -23,11 +23,10 @@ void dae::FPSComponent::Update(const float deltaTime)
         std::stringstream ss;
         ss << "FPS: " << std::fixed << std::setprecision(1) << fps;
 
-        auto* textComponent = GetOwner()->GetComponent<TextComponent>();
-        if (textComponent)
-        {
-            textComponent->SetText(ss.str());
-        }
+        //auto* textComponent = GetOwner()->GetComponent<TextComponent>();
+        
+        m_pTextComponent->SetText(ss.str());
+        
 
         m_accumulatedTime = 0.0f;
         m_frameCount = 0;
