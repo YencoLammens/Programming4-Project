@@ -10,7 +10,11 @@
 dae::TextComponent::TextComponent(GameObject* owner, const std::string& text, Font* font)
 	: BaseComponent(owner), m_needsUpdate(true), m_text(text), m_font(font)
 {
-
+	m_renderComponent = GetOwner()->GetComponent<RenderComponent>();
+	if (!m_renderComponent)
+	{
+		m_renderComponent = GetOwner()->AddComponent<RenderComponent>();
+	}
 }
 
 void dae::TextComponent::Update(float)
@@ -29,18 +33,21 @@ void dae::TextComponent::Update(float)
 		}
 		SDL_DestroySurface(surf);
 		m_textTexture = std::make_unique<Texture2D>(texture);
+
+		m_renderComponent->SetTexture(m_textTexture.get());
+
 		m_needsUpdate = false;
 	}
 }
 
-void dae::TextComponent::Render() const
-{
-	if (m_textTexture != nullptr)
-	{
-		const auto& pos = GetOwner()->GetTransform()->GetWorldPosition();
-		Renderer::GetInstance().RenderTexture(*m_textTexture, pos.x, pos.y);
-	}
-}
+//void dae::TextComponent::Render() const
+//{
+//	if (m_textTexture != nullptr)
+//	{
+//		const auto& pos = GetOwner()->GetTransform()->GetWorldPosition();
+//		Renderer::GetInstance().RenderTexture(*m_textTexture, pos.x, pos.y);
+//	}
+//}
 
 void dae::TextComponent::SetText(const std::string& text)
 {

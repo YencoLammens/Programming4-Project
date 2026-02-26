@@ -14,7 +14,7 @@ namespace dae
 	public:
 
 		GameObject();
-		~GameObject();
+		~GameObject(); //Default in cpp, not here cause of the unique_ptr member
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;
@@ -69,12 +69,6 @@ namespace dae
 		void SetParent(GameObject* parent, bool keepWorldPosition);
 		GameObject* GetParent();
 
-		void AddChild(GameObject* newChild);
-		void RemoveChild(GameObject* orphanedChild);
-		bool IsChild(GameObject* possibleChild) const;
-
-		
-
 		std::vector<GameObject*> GetChildren();
 
 		void MarkForDeletion();
@@ -82,7 +76,9 @@ namespace dae
 		void RemoveFlaggedComponents();
 
 	private:
-
+		bool IsChild(GameObject* possibleChild) const;
+		void AddChild(GameObject* newChild);
+		void RemoveChild(GameObject* orphanedChild);
 		std::vector<std::unique_ptr<BaseComponent>> m_componentsArr;
 		std::vector<GameObject*> m_childrenArr;
 		GameObject* m_parent{ nullptr };

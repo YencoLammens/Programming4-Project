@@ -93,11 +93,6 @@ dae::GameObject* dae::GameObject::GetParent()
     return nullptr;
 }
 
-void dae::GameObject::AddChild(GameObject* newChild)
-{
-    m_childrenArr.push_back(newChild);
-}
-
 //void dae::GameObject::RemoveChild(GameObject* orphanedChild)
 //{
 //    for (unsigned int idx{ 0 }; idx < m_childrenArr.size(); ++idx)
@@ -126,6 +121,11 @@ void dae::GameObject::AddChild(GameObject* newChild)
 bool dae::GameObject::IsChild(GameObject* possibleChild) const
 {
     return std::find(m_childrenArr.begin(), m_childrenArr.end(), possibleChild) != m_childrenArr.end();
+}
+
+void dae::GameObject::AddChild(GameObject* newChild)
+{
+    m_childrenArr.push_back(newChild);
 }
 
 void dae::GameObject::RemoveChild(GameObject* orphanedChild)

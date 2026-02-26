@@ -9,6 +9,7 @@ namespace dae
 {
 	class Font;
 	class Texture2D;
+	class RenderComponent;
 	class TextComponent final: public BaseComponent
 	{
 	public:
@@ -21,7 +22,7 @@ namespace dae
 
 		void Update(const float deltaTime) override;
 		void FixedUpdate(const float) override {};
-		void Render() const override;
+		void Render() const override {};
 
 		void SetText(const std::string& text);
 
@@ -31,6 +32,7 @@ namespace dae
 		std::string m_text;
 		Font* m_font;
 		std::unique_ptr<Texture2D> m_textTexture;
+		RenderComponent* m_renderComponent;
 		SDL_Color m_color{ 255, 255, 255, 255 };
 	};
 }
