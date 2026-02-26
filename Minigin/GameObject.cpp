@@ -3,11 +3,11 @@
 #include "ResourceManager.h"
 #include "Renderer.h"
 #include "BaseComponent.h"
-#include "TransformComponent.h"
+#include "Transform.h"
 #include "SceneManager.h"
 
 dae::GameObject::GameObject() 
-    :m_transform(std::make_unique<TransformComponent>(this))
+    :m_transform(std::make_unique<Transform>(this))
 {
 }
 
@@ -62,7 +62,7 @@ void dae::GameObject::RemoveComponent(BaseComponent* toBeDeletedComponent)
 
 }
 
-dae::TransformComponent* dae::GameObject::GetTransform() const
+dae::Transform* dae::GameObject::GetTransform() const
 {
     return m_transform.get();
 }

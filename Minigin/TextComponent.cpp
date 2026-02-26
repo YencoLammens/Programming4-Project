@@ -5,7 +5,7 @@
 #include "Font.h"
 #include "Texture2D.h"
 #include "GameObject.h"
-#include "TransformComponent.h"
+#include "Transform.h"
 
 dae::TextComponent::TextComponent(GameObject* owner, const std::string& text, Font* font)
 	: BaseComponent(owner), m_needsUpdate(true), m_text(text), m_font(font)

@@ -1,29 +1,29 @@
-#include "TransformComponent.h"
+#include "Transform.h"
 #include "GameObject.h"
 
-dae::TransformComponent::TransformComponent(GameObject* owner)
+dae::Transform::Transform(GameObject* owner)
 	:BaseComponent(owner), m_localPosition(0, 0, 0), m_worldPosition(0, 0, 0), m_positionIsDirty(false)
 {
 
 }
 
-const glm::vec3& dae::TransformComponent::GetLocalPosition() const
+const glm::vec3& dae::Transform::GetLocalPosition() const
 {
 	return m_localPosition;
 }
 
-void dae::TransformComponent::SetLocalPosition(const glm::vec3& pos)
+void dae::Transform::SetLocalPosition(const glm::vec3& pos)
 {
 	m_localPosition = pos;
 	SetPositionDirty();
 }
 
-void dae::TransformComponent::SetLocalPosition(float x, float y, float z)
+void dae::Transform::SetLocalPosition(float x, float y, float z)
 {
 	SetLocalPosition(glm::vec3(x, y, z));
 }
 
-const glm::vec3& dae::TransformComponent::GetWorldPosition()
+const glm::vec3& dae::Transform::GetWorldPosition()
 {
 	if (m_positionIsDirty)
 	{
@@ -32,7 +32,7 @@ const glm::vec3& dae::TransformComponent::GetWorldPosition()
 	return m_worldPosition;
 }
 
-void dae::TransformComponent::UpdateWorldPosition()
+void dae::Transform::UpdateWorldPosition()
 {
 	if (m_positionIsDirty)
 	{
@@ -44,12 +44,12 @@ void dae::TransformComponent::UpdateWorldPosition()
 	m_positionIsDirty = false;
 }
 
-bool dae::TransformComponent::IsPositionDirty()
+bool dae::Transform::IsPositionDirty()
 {
 	return m_positionIsDirty;
 }
 
-void dae::TransformComponent::SetPositionDirty()
+void dae::Transform::SetPositionDirty()
 {
 	m_positionIsDirty = true;
 	for (auto& child : GetOwner()->GetChildren())
@@ -58,21 +58,21 @@ void dae::TransformComponent::SetPositionDirty()
 	}
 }
 
-//void dae::TransformComponent::SetRotation(float angleDegrees)
+//void dae::Transform::SetRotation(float angleDegrees)
 //{
 //	m_rotationDegrees = angleDegrees;
 //}
 //
-//float dae::TransformComponent::GetRotation() const
+//float dae::Transform::GetRotation() const
 //{
 //	return m_rotationDegrees;
 //}
 
-void dae::TransformComponent::Update(float)
+void dae::Transform::Update(float)
 {
 	//m_localPosition += deltaTime;
 }	
 
-void dae::TransformComponent::FixedUpdate(float)
+void dae::Transform::FixedUpdate(float)
 {
 }

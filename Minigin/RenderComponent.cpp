@@ -1,7 +1,7 @@
 #include "RenderComponent.h"
 #include "Renderer.h"
 #include "GameObject.h"
-#include "TransformComponent.h"
+#include "Transform.h"
 
 dae::RenderComponent::RenderComponent(GameObject* owner)
 	: BaseComponent(owner), m_texture(nullptr), m_position{ 0, 0, 0 }

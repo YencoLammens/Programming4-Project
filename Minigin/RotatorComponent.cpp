@@ -1,6 +1,6 @@
 #include "RotatorComponent.h"
 #include "GameObject.h"
-#include "TransformComponent.h"
+#include "Transform.h"
 #include <cmath>
 
 dae::RotatorComponent::RotatorComponent(GameObject* owner, float radius, float speed, glm::vec3 center)

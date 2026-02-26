@@ -5,10 +5,10 @@
 namespace dae
 {
 	class GameObject;
-	class TransformComponent final: public BaseComponent
+	class Transform final: public BaseComponent
 	{
 	public:
-		TransformComponent(GameObject* parent);
+		Transform(GameObject* parent);
 		const glm::vec3& GetLocalPosition() const;
 		void SetLocalPosition(const glm::vec3& pos);
 		void SetLocalPosition(float x, float y, float z);

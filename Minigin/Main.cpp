@@ -11,7 +11,7 @@
 #include "TextComponent.h"
 #include "Scene.h"
 #include "GameObject.h"
-#include "TransformComponent.h"
+#include "Transform.h"
 #include "RenderComponent.h"
 #include "FPSComponent.h"
 #include "RotatorComponent.h"

@@ -8,7 +8,7 @@
 
 namespace dae
 {
-	class TransformComponent;
+	class Transform;
 	class GameObject final
 	{
 	public:
@@ -64,7 +64,7 @@ namespace dae
 			return nullptr;
 		}
 
-		TransformComponent* GetTransform() const;
+		Transform* GetTransform() const;
 
 		void SetParent(GameObject* parent, bool keepWorldPosition);
 		GameObject* GetParent();
@@ -83,7 +83,7 @@ namespace dae
 		std::vector<GameObject*> m_childrenArr;
 		GameObject* m_parent{ nullptr };
 
-		std::unique_ptr<TransformComponent> m_transform;
+		std::unique_ptr<Transform> m_transform;
 
 		bool m_mustAComponentBeDeleted = false;
 		bool m_toBeDeleted = false;
