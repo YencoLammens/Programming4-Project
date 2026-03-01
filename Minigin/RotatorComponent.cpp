@@ -10,6 +10,7 @@ dae::RotatorComponent::RotatorComponent(GameObject* owner, float radius, float s
 
 void dae::RotatorComponent::Update(const float deltaTime)
 {
+    //Can overflow, but I'd have to define PI somewhere and this class will not be used later
     m_angle += m_speed * deltaTime;
 
     const float x = m_center.x + std::cos(m_angle) * m_radius;
