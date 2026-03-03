@@ -15,6 +15,7 @@
 #include "RenderComponent.h"
 #include "FPSComponent.h"
 #include "RotatorComponent.h"
+#include "TrashTheCacheComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -46,7 +47,7 @@ static void load()
 	go->AddComponent<dae::FPSComponent>();
 	scene.Add(std::move(go));
 
-	go = std::make_unique<dae::GameObject>();
+	/*go = std::make_unique<dae::GameObject>();
 	auto* renderComponent3 = go->AddComponent<dae::RenderComponent>();
 	renderComponent3->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("Bubblun.png"));
 	go->AddComponent<dae::RotatorComponent>(100.f, 1.f, glm::vec3(320, 200, 0));
@@ -55,12 +56,14 @@ static void load()
 	go2->SetParent(go.get(), true);
 	auto* renderComponent4 = go2->AddComponent<dae::RenderComponent>();
 	renderComponent4->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("Bubblun.png"));
-	go2->AddComponent<dae::RotatorComponent>(100.f, -2.f);
+	go2->AddComponent<dae::RotatorComponent>(100.f, -2.f);*/
 
-	scene.Add(std::move(go));
-	scene.Add(std::move(go2));
+	/*scene.Add(std::move(go));
+	scene.Add(std::move(go2));*/
 
-
+	auto cacheGO = std::make_unique<dae::GameObject>();
+	cacheGO->AddComponent<dae::TrashTheCacheComponent>();
+	scene.Add(std::move(cacheGO));
 	
 }
 
