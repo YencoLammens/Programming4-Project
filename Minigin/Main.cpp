@@ -59,7 +59,7 @@ static void load()
 
 	auto player2 = std::make_unique<dae::GameObject>();
 	auto* renderComponent4 = player2->AddComponent<dae::RenderComponent>();
-	renderComponent4->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("Bubblun.png"));
+	renderComponent4->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("Bobblun.png"));
 	player2->GetTransform()->SetLocalPosition(500, 300, 0);
 	dae::GameObject* p2 = player2.get();
 	scene.Add(std::move(player2));
