@@ -158,8 +158,7 @@ target_link_libraries("${TARGET_NAME}" PUBLIC
   ${VLD_LIBRARIES}
 )
 
-# XInput: Windows native only. The Emscripten and other non-Windows builds use
-# the stub inside Controller.cpp, so they must NOT link against xinput.
+# XInput: Windows native only
 if(WIN32 AND NOT EMSCRIPTEN)
   target_link_libraries("${TARGET_NAME}" PUBLIC xinput)
 endif()
