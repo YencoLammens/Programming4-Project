@@ -4,7 +4,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <XInput.h>
-#pragma comment(lib, "xinput.lib") //Better oversight to keep it here than in the CMake, can change later if needed ofc
 
 namespace dae
 {
