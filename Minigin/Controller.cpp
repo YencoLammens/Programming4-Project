@@ -73,6 +73,7 @@ namespace dae
 
         void Poll()
         {
+            SDL_UpdateGamepads();
             if (!m_gamepad)
                 TryOpen();
             if (!m_gamepad)
