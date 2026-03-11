@@ -30,7 +30,11 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   "Minigin/RenderComponent.cpp"
   "Minigin/FPSComponent.cpp"
   "Minigin/RotatorComponent.cpp"
- "Minigin/TrashTheCacheComponent.cpp")
+  "Minigin/TrashTheCacheComponent.cpp"
+  "Minigin/Command.cpp"
+  "Minigin/Controller.cpp"
+  "Minigin/MoveCommand.cpp"
+)
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
@@ -153,6 +157,12 @@ target_link_libraries("${TARGET_NAME}" PUBLIC
   imgui
   ${VLD_LIBRARIES}
 )
+
+# XInput: Windows native only. The Emscripten and other non-Windows builds use
+# the stub inside Controller.cpp, so they must NOT link against xinput.
+if(WIN32 AND NOT EMSCRIPTEN)
+  target_link_libraries("${TARGET_NAME}" PUBLIC xinput)
+endif()
 
 if(MSVC)
   target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)

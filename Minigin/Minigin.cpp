@@ -115,7 +115,7 @@ void dae::Minigin::RunOneFrame()
 	m_lastTime = currentTime;
 	m_lag += deltaTime;
 
-	m_quit = !InputManager::GetInstance().ProcessInput();
+	m_quit = !InputManager::GetInstance().ProcessInput(deltaTime);
 
 	const float MS_PER_UPDATE = 0.02f;
 	while (m_lag >= MS_PER_UPDATE)
