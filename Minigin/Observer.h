@@ -1,8 +1,8 @@
-#pragma onces
+#pragma once
+#include "EventId.h"
 
 namespace dae
 {
-    using EventId = unsigned int;
     class Subject;
     class Observer
     {
