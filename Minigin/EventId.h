@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef> //For size_t, could be changed but I want to follow the slides with this
 
 namespace dae
 {
