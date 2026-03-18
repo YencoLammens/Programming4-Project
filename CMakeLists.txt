@@ -34,7 +34,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   "Minigin/Command.cpp"
   "Minigin/Controller.cpp"
   "Minigin/MoveCommand.cpp"
-  "Minigin/Subject.cpp" "Minigin/Observer.cpp")
+  "Minigin/Subject.cpp" "Minigin/Observer.cpp" "Minigin/HealthComponent.cpp" "Minigin/ScoreComponent.cpp")
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
