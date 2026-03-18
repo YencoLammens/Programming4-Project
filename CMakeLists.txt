@@ -41,7 +41,6 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   "Minigin/ScoreDisplay.cpp" 
   "Minigin/HealthDisplay.cpp" 
   "Minigin/AddPointsCommand.cpp" 
-  "Minigin/LoseHealthCommand.h" 
   "Minigin/LoseHealthCommand.cpp" 
   "Minigin/SteamAchievementComponent.cpp")
 
