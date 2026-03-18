@@ -1,4 +1,4 @@
-##pragma once
+#pragma once
 #include "BaseComponent.h"
 #include "Subject.h"
 
@@ -15,8 +15,8 @@ namespace dae
         ScoreComponent(ScoreComponent&&) = delete;
         ScoreComponent& operator=(ScoreComponent&&) = delete;
 
-        void Update(const float deltaTime) override {};
-        void FixedUpdate(const float fixedTimeStep) override {};
+        void Update(const float) override {};
+        void FixedUpdate(const float) override {};
 
         void AddPoints(int points);
         int GetScore() const { return m_score; }
