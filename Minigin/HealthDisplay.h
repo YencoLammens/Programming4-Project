@@ -6,25 +6,28 @@ namespace dae
 {
     class TextComponent;
     class HealthComponent;
+    class Subject;
 
     class HealthDisplay final : public BaseComponent, public Observer
     {
     public:
         HealthDisplay(GameObject* owner, Subject* subject, HealthComponent* healthComponent);
-        ~HealthDisplay() override = default;
+        ~HealthDisplay() override;
 
         HealthDisplay(const HealthDisplay&) = delete;
         HealthDisplay& operator=(const HealthDisplay&) = delete;
         HealthDisplay(HealthDisplay&&) = delete;
         HealthDisplay& operator=(HealthDisplay&&) = delete;
 
-        void Update(const float) override {};
-        void FixedUpdate(const float) override {};
+        void Update(const float) override {}
+        void FixedUpdate(const float) override {}
 
         void Notify(EventId event) override;
+        void OnSubjectDestroyed() override { m_subject = nullptr; }
 
     private:
         TextComponent* m_textComponent{ nullptr };
         HealthComponent* m_healthComponent{ nullptr };
+        Subject* m_subject{ nullptr };
     };
 }

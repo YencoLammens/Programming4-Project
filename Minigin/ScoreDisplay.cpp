@@ -1,15 +1,23 @@
 #include "ScoreDisplay.h"
 #include "TextComponent.h"
 #include "ScoreComponent.h"
+#include "Subject.h"
 #include "GameObject.h"
 #include "EventId.h"
 
 namespace dae
 {
     ScoreDisplay::ScoreDisplay(GameObject* owner, Subject* subject, ScoreComponent* scoreComponent)
-        : BaseComponent(owner), Observer(subject), m_scoreComponent(scoreComponent)
+        : BaseComponent(owner), m_scoreComponent(scoreComponent), m_subject(subject)
     {
         m_textComponent = owner->GetComponent<TextComponent>();
+        m_subject->AddObserver(this);
+    }
+
+    ScoreDisplay::~ScoreDisplay()
+    {
+        if (m_subject)
+            m_subject->RemoveObserver(this);
     }
 
     void ScoreDisplay::Notify(EventId event)

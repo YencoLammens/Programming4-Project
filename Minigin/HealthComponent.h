@@ -15,8 +15,8 @@ namespace dae
         HealthComponent(HealthComponent&&) = delete;
         HealthComponent& operator=(HealthComponent&&) = delete;
 
-        void Update(const float) override {};
-        void FixedUpdate(const float) override {};
+        void Update(const float) override {}
+        void FixedUpdate(const float) override {}
 
         void LoseLife();
         int GetLives() const { return m_lives; }

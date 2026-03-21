@@ -9,6 +9,7 @@ namespace dae
             observer->OnSubjectDestroyed();
         m_observers.clear();
     }
+
     void Subject::AddObserver(Observer* observer)
     {
         m_observers.push_back(observer);

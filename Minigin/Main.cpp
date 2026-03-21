@@ -15,7 +15,6 @@
 #include "RenderComponent.h"
 #include "FPSComponent.h"
 #include "RotatorComponent.h"
-#include "TrashTheCacheComponent.h"
 #include "InputManager.h"
 #include "MoveCommand.h"
 #include "Controller.h"
@@ -26,9 +25,6 @@
 #include "LoseHealthCommand.h"
 #include "AddPointsCommand.h"
 
-#ifdef USE_STEAMWORKS
-#include "SteamAchievementComponent.h"
-#endif
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -70,12 +66,12 @@ static void load()
     //Tutorial text
     go = std::make_unique<dae::GameObject>();
     go->GetTransform()->SetLocalPosition(10, 80, 0);
-    go->AddComponent<dae::TextComponent>("Controller: Use the D-Pad to move Bobblun, X to damage health, A to gain points", fontSmall);
+    go->AddComponent<dae::TextComponent>("Controller: D-Pad to move Bobblun, X to lose health, A to gain points", fontSmall);
     scene.Add(std::move(go));
 
     go = std::make_unique<dae::GameObject>();
     go->GetTransform()->SetLocalPosition(10, 100, 0);
-    go->AddComponent<dae::TextComponent>("Keyboard: Use WASD to move Bubblun, C to damage health, X to gain points", fontSmall);
+    go->AddComponent<dae::TextComponent>("Keyboard: WASD to move Bubblun, C to lose health, X to gain points", fontSmall);
     scene.Add(std::move(go));
 
     //Player 1
@@ -124,17 +120,6 @@ static void load()
     player2ScoreDisplayGO->AddComponent<dae::ScoreDisplay>(score2, score2);
     scene.Add(std::move(player2ScoreDisplayGO));
 
-    //Steam achievements
-#ifdef USE_STEAMWORKS
-    auto steamGO1 = std::make_unique<dae::GameObject>();
-    steamGO1->AddComponent<dae::SteamAchievementComponent>(score1, score1);
-    scene.Add(std::move(steamGO1));
-
-    auto steamGO2 = std::make_unique<dae::GameObject>();
-    steamGO2->AddComponent<dae::SteamAchievementComponent>(score2, score2);
-    scene.Add(std::move(steamGO2));
-#endif
-
     //Keyboard inputs
     auto& input = dae::InputManager::GetInstance();
     //Movement
@@ -142,7 +127,6 @@ static void load()
     input.BindCommand(SDL_SCANCODE_S, dae::KeyState::Pressed, std::make_unique<dae::MoveCommand>(p1, glm::vec3{ 0,  1, 0 }, 100.f));
     input.BindCommand(SDL_SCANCODE_A, dae::KeyState::Pressed, std::make_unique<dae::MoveCommand>(p1, glm::vec3{ -1,  0, 0 }, 100.f));
     input.BindCommand(SDL_SCANCODE_D, dae::KeyState::Pressed, std::make_unique<dae::MoveCommand>(p1, glm::vec3{ 1,  0, 0 }, 100.f));
-
     //Misc
     input.BindCommand(SDL_SCANCODE_C, dae::KeyState::Down, std::make_unique<dae::LoseHealthCommand>(p1, health1));
     input.BindCommand(SDL_SCANCODE_X, dae::KeyState::Down, std::make_unique<dae::AddPointsCommand>(p1, score1, 10));
@@ -153,7 +137,6 @@ static void load()
     input.BindCommand(0, dae::Controller::ControllerButton::DPadDown, dae::KeyState::Pressed, std::make_unique<dae::MoveCommand>(p2, glm::vec3{ 0,  1, 0 }, 200.f));
     input.BindCommand(0, dae::Controller::ControllerButton::DPadLeft, dae::KeyState::Pressed, std::make_unique<dae::MoveCommand>(p2, glm::vec3{ -1,  0, 0 }, 200.f));
     input.BindCommand(0, dae::Controller::ControllerButton::DPadRight, dae::KeyState::Pressed, std::make_unique<dae::MoveCommand>(p2, glm::vec3{ 1,  0, 0 }, 200.f));
-
     //Misc
     input.BindCommand(0, dae::Controller::ControllerButton::ButtonX, dae::KeyState::Down, std::make_unique<dae::LoseHealthCommand>(p2, health2));
     input.BindCommand(0, dae::Controller::ControllerButton::ButtonA, dae::KeyState::Down, std::make_unique<dae::AddPointsCommand>(p2, score2, 10));

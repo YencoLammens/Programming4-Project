@@ -15,7 +15,7 @@ namespace dae
         AddPointsCommand(AddPointsCommand&&) = delete;
         AddPointsCommand& operator=(AddPointsCommand&&) = delete;
 
-        void Execute(float deltaTime) override;
+        void Execute(float) override;
 
     private:
         ScoreComponent* m_scoreComponent;

@@ -1,15 +1,23 @@
 #include "HealthDisplay.h"
 #include "TextComponent.h"
 #include "HealthComponent.h"
+#include "Subject.h"
 #include "GameObject.h"
 #include "EventId.h"
 
 namespace dae
 {
     HealthDisplay::HealthDisplay(GameObject* owner, Subject* subject, HealthComponent* healthComponent)
-        : BaseComponent(owner), Observer(subject), m_healthComponent(healthComponent)
+        : BaseComponent(owner), m_healthComponent(healthComponent), m_subject(subject)
     {
         m_textComponent = owner->GetComponent<TextComponent>();
+        m_subject->AddObserver(this);
+    }
+
+    HealthDisplay::~HealthDisplay()
+    {
+        if (m_subject)
+            m_subject->RemoveObserver(this);
     }
 
     void HealthDisplay::Notify(EventId event)
