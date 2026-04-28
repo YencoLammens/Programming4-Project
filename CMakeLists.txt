@@ -30,7 +30,7 @@ add_library(minigin STATIC
   "Minigin/Command.cpp"
   "Minigin/Controller.cpp"
   "Minigin/Subject.cpp" 
-  )
+   "Minigin/ServiceLocator.cpp")
  
 add_executable(${GAME_NAME} ${TARGET_PARAM}
   Game/Main.cpp
@@ -42,8 +42,7 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
   "Game/ScoreDisplay.cpp" 
   "Game/HealthDisplay.cpp"
   "Game/AddPointsCommand.cpp" 
-  "Game/LoseHealthCommand.cpp" 
-
+  "Game/LoseHealthCommand.cpp"
   )
  
 # enable c++20 features

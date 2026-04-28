@@ -24,6 +24,7 @@
 #include "ScoreDisplay.h"
 #include "LoseHealthCommand.h"
 #include "AddPointsCommand.h"
+#include "ServiceLocator.h"
 
 
 #include <filesystem>
