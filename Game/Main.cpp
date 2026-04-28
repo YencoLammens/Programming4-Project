@@ -25,6 +25,8 @@
 #include "LoseHealthCommand.h"
 #include "AddPointsCommand.h"
 #include "ServiceLocator.h"
+#include "LoggingSoundSystem.h"
+#include "NullSoundSystem.h"
 
 
 #include <filesystem>
@@ -32,6 +34,12 @@ namespace fs = std::filesystem;
 	
 static void load()
 {
+	//Service locator + sound system setup
+    dae::ServiceLocator::RegisterSoundSystem(
+        std::make_unique<dae::LoggingSoundSystem>(std::make_unique<dae::NullSoundSystem>()));
+    dae::ServiceLocator::GetSoundSystem().AddSound(0, "Sounds/TestSong.mp3");
+    dae::ServiceLocator::GetSoundSystem().Play(0, 1.0f);
+
     //Scene setup
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
 
