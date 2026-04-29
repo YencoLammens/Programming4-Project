@@ -31,15 +31,6 @@ namespace dae
 
         ~SDLSoundSystemImpl()
         {
-            for (auto& [id, clip] : m_audioclips)
-            {
-                if (clip.pAudio)
-                    MIX_DestroyAudio(clip.pAudio);
-            }
-
-            if (m_mixer)
-                MIX_DestroyMixer(m_mixer);
-
             MIX_Quit();
         }
 

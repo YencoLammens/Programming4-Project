@@ -38,7 +38,7 @@ static void load()
 	//Service locator + sound system setup
     dae::ServiceLocator::RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
     dae::ServiceLocator::GetSoundSystem().AddSound(0, "Data/Sounds/TestSong.mp3");
-    dae::ServiceLocator::GetSoundSystem().Play(0, 100.f);
+    dae::ServiceLocator::GetSoundSystem().Play(0, 1.f);
 
     //Scene setup
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
