@@ -26,8 +26,8 @@
 #include "AddPointsCommand.h"
 #include "ServiceLocator.h"
 #include "LoggingSoundSystem.h"
-#include "NullSoundSystem.h"
 #include "SDLSoundSystem.h"
+#include "PlaySoundCommand.h"
 
 
 #include <filesystem>
@@ -36,9 +36,15 @@ namespace fs = std::filesystem;
 static void load()
 {
 	//Service locator + sound system setup
+#ifdef _DEBUG
+    dae::ServiceLocator::RegisterSoundSystem(
+        std::make_unique<dae::LoggingSoundSystem>(std::make_unique<dae::SDLSoundSystem>()));
+#else
     dae::ServiceLocator::RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
+#endif
+
     dae::ServiceLocator::GetSoundSystem().AddSound(0, "Data/Sounds/TestSong.mp3");
-    dae::ServiceLocator::GetSoundSystem().Play(0, 1.f);
+   // dae::ServiceLocator::GetSoundSystem().Play(0, 1.f);
 
     //Scene setup
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
@@ -80,7 +86,7 @@ static void load()
 
     go = std::make_unique<dae::GameObject>();
     go->GetTransform()->SetLocalPosition(10, 100, 0);
-    go->AddComponent<dae::TextComponent>("Keyboard: WASD to move Bubblun, C to lose health, X to gain points", fontSmall);
+    go->AddComponent<dae::TextComponent>("Keyboard: WASD to move Bubblun, C to lose health, X to gain points, Z to play a motivational song", fontSmall);
     scene.Add(std::move(go));
 
     //Player 1
@@ -149,6 +155,9 @@ static void load()
     //Misc
     input.BindCommand(0, dae::Controller::ControllerButton::ButtonX, dae::KeyState::Down, std::make_unique<dae::LoseHealthCommand>(p2, health2));
     input.BindCommand(0, dae::Controller::ControllerButton::ButtonA, dae::KeyState::Down, std::make_unique<dae::AddPointsCommand>(p2, score2, 10));
+
+    //Sound test
+    input.BindCommand(SDL_SCANCODE_Z, dae::KeyState::Down, std::make_unique<dae::PlaySoundCommand>(0, 1.0f));
 }
 
 int main(int, char*[]) {

@@ -32,7 +32,7 @@ add_library(minigin STATIC
   "Minigin/Subject.cpp" 
   "Minigin/ServiceLocator.cpp" 
   "Minigin/LoggingSoundSystem.cpp"
-  "Minigin/SDLSoundSystem.cpp")
+  "Minigin/SDLSoundSystem.cpp" "Game/PlaySoundCommand.cpp")
  
 add_executable(${GAME_NAME} ${TARGET_PARAM}
   Game/Main.cpp
