@@ -46,7 +46,10 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
   "Game/AddPointsCommand.cpp" 
   "Game/LoseHealthCommand.cpp"
   "Game/PlaySoundCommand.cpp"
-  "Game/CharacterStateComponent.cpp")
+  "Game/CharacterStateComponent.cpp"
+  "Game/WanderingState.cpp"
+  "Game/BubbledState.cpp"
+  "Game/DeadState.cpp")
  
 # enable c++20 features
 target_compile_features(minigin PUBLIC cxx_std_20)

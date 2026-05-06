@@ -15,7 +15,8 @@ namespace dae
         CharacterState& operator=(CharacterState&&) = delete;
 
         virtual void OnEnter(GameObject* owner) = 0;
-        virtual std::unique_ptr<CharacterState> Update(GameObject* owner, float deltaTime) = 0;
+        virtual std::unique_ptr<CharacterState> HandleInput(GameObject* owner) = 0;
+        virtual void Update(GameObject* owner, float deltaTime) = 0;
         virtual void OnExit(GameObject* owner) = 0;
 
     protected:

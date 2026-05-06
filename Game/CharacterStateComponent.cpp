@@ -14,9 +14,14 @@ namespace dae
     {
         if (!m_currentState) return;
 
-        auto newState = m_currentState->Update(GetOwner(), deltaTime);
+        auto newState = m_currentState->HandleInput(GetOwner());
         if (newState)
+        {
             SetState(std::move(newState));
+            return;
+        }
+
+        m_currentState->Update(GetOwner(), deltaTime);
     }
 
     void CharacterStateComponent::SetState(std::unique_ptr<CharacterState> newState)

@@ -28,6 +28,8 @@
 #include "LoggingSoundSystem.h"
 #include "SDLSoundSystem.h"
 #include "PlaySoundCommand.h"
+#include "CharacterStateComponent.h"
+#include "WanderingState.h"
 
 
 #include <filesystem>
@@ -157,7 +159,15 @@ static void load()
     input.BindCommand(0, dae::Controller::ControllerButton::ButtonA, dae::KeyState::Down, std::make_unique<dae::AddPointsCommand>(p2, score2, 10));
 
     //Sound test
-    input.BindCommand(SDL_SCANCODE_Z, dae::KeyState::Down, std::make_unique<dae::PlaySoundCommand>(0, 1.0f));
+    //input.BindCommand(SDL_SCANCODE_Z, dae::KeyState::Down, std::make_unique<dae::PlaySoundCommand>(0, 1.0f));
+
+    //Enemy
+    auto enemy = std::make_unique<dae::GameObject>();
+    auto* enemyRender = enemy->AddComponent<dae::RenderComponent>();
+    enemyRender->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("Maita.png"));
+    enemy->GetTransform()->SetLocalPosition(200.f, 400.f, 0.f);
+    enemy->AddComponent<dae::CharacterStateComponent>(std::make_unique<dae::WanderingState>());
+    scene.Add(std::move(enemy));
 }
 
 int main(int, char*[]) {
