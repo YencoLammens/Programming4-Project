@@ -32,7 +32,8 @@ add_library(minigin STATIC
   "Minigin/Subject.cpp" 
   "Minigin/ServiceLocator.cpp" 
   "Minigin/LoggingSoundSystem.cpp"
-  "Minigin/SDLSoundSystem.cpp")
+  "Minigin/SDLSoundSystem.cpp"  
+  "Minigin/Rectf.cpp")
  
 add_executable(${GAME_NAME} ${TARGET_PARAM}
   Game/Main.cpp
@@ -49,7 +50,11 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
   "Game/CharacterStateComponent.cpp"
   "Game/WanderingState.cpp"
   "Game/BubbledState.cpp"
-  "Game/DeadState.cpp")
+  "Game/DeadState.cpp"
+  "Game/HitboxComponent.cpp"
+  "Game/BubbleHitCommand.cpp" 
+  "Game/IdleState.cpp" 
+  "Game/HurtState.cpp")
  
 # enable c++20 features
 target_compile_features(minigin PUBLIC cxx_std_20)

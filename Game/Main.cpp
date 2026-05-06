@@ -30,6 +30,9 @@
 #include "PlaySoundCommand.h"
 #include "CharacterStateComponent.h"
 #include "WanderingState.h"
+#include "HitboxComponent.h"
+#include "BubbleHitCommand.h"
+#include "IdleState.h"
 
 
 #include <filesystem>
@@ -88,7 +91,7 @@ static void load()
 
     go = std::make_unique<dae::GameObject>();
     go->GetTransform()->SetLocalPosition(10, 100, 0);
-    go->AddComponent<dae::TextComponent>("Keyboard: WASD to move Bubblun, C to lose health, X to gain points, Z to play a motivational song", fontSmall);
+    go->AddComponent<dae::TextComponent>("Keyboard: WASD to move Bubblun, C to lose health, X to gain points, B to make the enemy enter bubbled state", fontSmall);
     scene.Add(std::move(go));
 
     //Player 1
@@ -98,6 +101,8 @@ static void load()
     player1->GetTransform()->SetLocalPosition(300, 300, 0);
     auto* health1 = player1->AddComponent<dae::HealthComponent>(3);
     auto* score1 = player1->AddComponent<dae::ScoreComponent>();
+	auto* hitboxComponent1 = player1->AddComponent<dae::HitboxComponent>(32.f, 32.f);
+    auto* p1State = player1->AddComponent<dae::CharacterStateComponent>(std::make_unique<dae::IdleState>());
     dae::GameObject* p1 = player1.get();
     scene.Add(std::move(player1));
 
@@ -121,6 +126,8 @@ static void load()
     player2->GetTransform()->SetLocalPosition(500, 300, 0);
     auto* health2 = player2->AddComponent<dae::HealthComponent>(3);
     auto* score2 = player2->AddComponent<dae::ScoreComponent>();
+    auto* hitboxComponent2 = player2->AddComponent<dae::HitboxComponent>(32.f, 32.f);
+    auto* p2State = player2->AddComponent<dae::CharacterStateComponent>(std::make_unique<dae::IdleState>());
     dae::GameObject* p2 = player2.get();
     scene.Add(std::move(player2));
 
@@ -136,6 +143,14 @@ static void load()
     player2ScoreDisplayGO->AddComponent<dae::TextComponent>("Score: 0", fontSmall);
     player2ScoreDisplayGO->AddComponent<dae::ScoreDisplay>(score2, score2);
     scene.Add(std::move(player2ScoreDisplayGO));
+
+    //Enemy
+    auto enemy = std::make_unique<dae::GameObject>();
+    auto* enemyRender = enemy->AddComponent<dae::RenderComponent>();
+    enemyRender->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("Maita.png"));
+    enemy->GetTransform()->SetLocalPosition(200.f, 400.f, 0.f);
+    enemy->AddComponent<dae::HitboxComponent>(32.f, 32.f);
+    auto* enemyState = enemy->AddComponent<dae::CharacterStateComponent>(std::make_unique<dae::WanderingState>());
 
     //Keyboard inputs
     auto& input = dae::InputManager::GetInstance();
@@ -161,12 +176,7 @@ static void load()
     //Sound test
     //input.BindCommand(SDL_SCANCODE_Z, dae::KeyState::Down, std::make_unique<dae::PlaySoundCommand>(0, 1.0f));
 
-    //Enemy
-    auto enemy = std::make_unique<dae::GameObject>();
-    auto* enemyRender = enemy->AddComponent<dae::RenderComponent>();
-    enemyRender->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("Maita.png"));
-    enemy->GetTransform()->SetLocalPosition(200.f, 400.f, 0.f);
-    enemy->AddComponent<dae::CharacterStateComponent>(std::make_unique<dae::WanderingState>());
+    input.BindCommand(SDL_SCANCODE_B, dae::KeyState::Down, std::make_unique<dae::BubbleHitCommand>(enemy.get(), enemyState));
     scene.Add(std::move(enemy));
 }
 
