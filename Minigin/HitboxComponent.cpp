@@ -16,10 +16,14 @@ namespace dae
         m_hitBox.x = pos.x;
         m_hitBox.y = pos.y;
     }
-    
+
     bool HitboxComponent::Overlaps(const HitboxComponent& other) const
-    {  
+    {
         return IsOverlapping(m_hitBox, other.GetHitBox());
     }
 
+    void HitboxComponent::TriggerHit()
+    {
+        NotifyObservers(make_sdbm_hash("OnHit"));
+    }
 }

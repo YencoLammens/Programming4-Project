@@ -1,10 +1,11 @@
 #pragma once
 #include "BaseComponent.h"
+#include "Subject.h"
 #include "Rectf.h"
 
 namespace dae
 {
-    class HitboxComponent final : public BaseComponent
+    class HitboxComponent final : public BaseComponent, public Subject
     {
     public:
         HitboxComponent(GameObject* owner, float width, float height);
@@ -18,10 +19,11 @@ namespace dae
         void FixedUpdate(const float) override {}
 
         bool Overlaps(const HitboxComponent& other) const;
+        void TriggerHit();
 
         float GetWidth()  const { return m_width; }
         float GetHeight() const { return m_height; }
-		Rectf GetHitBox() const { return m_hitBox; }
+        Rectf GetHitBox() const { return m_hitBox; }
 
     private:
         float m_width;
