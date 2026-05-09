@@ -2,7 +2,8 @@
 #include "Rectf.h"
 namespace dae
 {
-	bool IsOverlapping(const dae::Rectf& r1, const dae::Rectf& r2)
+	//ODR violation if no inline
+	inline bool IsOverlapping(const dae::Rectf& r1, const dae::Rectf& r2)
 	{
 		// If one rectangle is on left side of the other
 		if ((r1.x + r1.width) < r2.x || (r2.x + r2.width) < r1.x)
