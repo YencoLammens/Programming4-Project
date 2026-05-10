@@ -33,7 +33,8 @@
 #include "HitboxComponent.h"
 #include "BubbleHitCommand.h"
 #include "IdleState.h"
-
+#include "CollisionManager.h"
+#include "PlayerHitObserver.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -50,6 +51,9 @@ static void load()
 
     dae::ServiceLocator::GetSoundSystem().AddSound(0, "Data/Sounds/TestSong.mp3");
    // dae::ServiceLocator::GetSoundSystem().Play(0, 1.f);
+
+    //Collision manager set up
+    dae::ServiceLocator::RegisterCollisionManager(std::make_unique<dae::CollisionManager>());
 
     //Scene setup
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
@@ -103,6 +107,7 @@ static void load()
     auto* score1 = player1->AddComponent<dae::ScoreComponent>();
 	auto* hitboxComponent1 = player1->AddComponent<dae::HitboxComponent>(32.f, 32.f);
     auto* p1State = player1->AddComponent<dae::CharacterStateComponent>(std::make_unique<dae::IdleState>());
+    player1->AddComponent<dae::PlayerHitObserver>(hitboxComponent1, p1State);
     dae::GameObject* p1 = player1.get();
     scene.Add(std::move(player1));
 
@@ -128,6 +133,7 @@ static void load()
     auto* score2 = player2->AddComponent<dae::ScoreComponent>();
     auto* hitboxComponent2 = player2->AddComponent<dae::HitboxComponent>(32.f, 32.f);
     auto* p2State = player2->AddComponent<dae::CharacterStateComponent>(std::make_unique<dae::IdleState>());
+    player2->AddComponent<dae::PlayerHitObserver>(hitboxComponent2, p2State);
     dae::GameObject* p2 = player2.get();
     scene.Add(std::move(player2));
 
