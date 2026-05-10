@@ -16,6 +16,7 @@
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include "ServiceLocator.h"
 #include <chrono>
 #include <thread>
 
@@ -124,6 +125,7 @@ void dae::Minigin::RunOneFrame()
 	}
 
 	SceneManager::GetInstance().Update(deltaTime);
+	ServiceLocator::GetCollisionManager().Update();
 	SceneManager::GetInstance().RemoveFlaggedObjects();
 	Renderer::GetInstance().Render();
 

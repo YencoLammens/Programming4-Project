@@ -34,11 +34,13 @@ namespace dae
     {
         m_pOverlapPartner = other;
         NotifyObservers(make_sdbm_hash("OnOverlapBegin"));
+        m_pOverlapPartner = nullptr;
     }
 
     void HitboxComponent::EndOverlap(HitboxComponent* other)
     {
         m_pOverlapPartner = other;
         NotifyObservers(make_sdbm_hash("OnOverlapEnd"));
+        m_pOverlapPartner = nullptr;
     }
 }
