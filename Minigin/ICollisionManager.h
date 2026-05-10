@@ -16,4 +16,5 @@ namespace dae
         virtual void Update() = 0;
     protected:
         ICollisionManager() = default;
-    }
+    };
+}

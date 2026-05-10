@@ -2,14 +2,13 @@
 #include "BaseComponent.h"
 #include "Subject.h"
 #include "Rectf.h"
-
 namespace dae
 {
     class HitboxComponent final : public BaseComponent, public Subject
     {
     public:
         HitboxComponent(GameObject* owner, float width, float height);
-        ~HitboxComponent() override = default;
+        ~HitboxComponent() override;
         HitboxComponent(const HitboxComponent&) = delete;
         HitboxComponent& operator=(const HitboxComponent&) = delete;
         HitboxComponent(HitboxComponent&&) = delete;
@@ -19,7 +18,9 @@ namespace dae
         void FixedUpdate(const float) override {}
 
         bool Overlaps(const HitboxComponent& other) const;
-        void TriggerHit();
+        void BeginOverlap(HitboxComponent* other);
+        void EndOverlap(HitboxComponent* other);
+        HitboxComponent* GetOverlapPartner() const { return m_pOverlapPartner; }
 
         float GetWidth()  const { return m_width; }
         float GetHeight() const { return m_height; }
@@ -29,5 +30,6 @@ namespace dae
         float m_width;
         float m_height;
         Rectf m_hitBox;
+        HitboxComponent* m_pOverlapPartner{ nullptr };
     };
 }

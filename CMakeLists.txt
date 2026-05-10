@@ -35,6 +35,7 @@ add_library(minigin STATIC
   "Minigin/SDLSoundSystem.cpp"  
   "Minigin/HitboxComponent.cpp"
   "Minigin/CollisionManager.cpp"
+  "Minigin/Rectf.cpp"
 )
  
 add_executable(${GAME_NAME} ${TARGET_PARAM}
