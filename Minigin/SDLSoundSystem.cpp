@@ -54,6 +54,7 @@ namespace dae
                 MIX_DestroyMixer(m_mixer);*/
 
             //MIX_Quit();
+			//SDL_QuitSubSystem(SDL_INIT_AUDIO);
         }
 
         void Play(sound_id id, float volume)

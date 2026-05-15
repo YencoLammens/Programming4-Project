@@ -15,15 +15,7 @@ namespace dae
         m_timer = 0.f;
     }
 
-    std::unique_ptr<CharacterState> BubbledState::HandleInput(GameObject*)
-    {
-        if (m_timer >= m_duration)
-            return std::make_unique<DeadState>();
-
-        return nullptr;
-    }
-
-    void BubbledState::Update(GameObject* owner, float deltaTime)
+    std::unique_ptr<CharacterState> BubbledState::HandleInput(GameObject* owner, float deltaTime)
     {
         m_timer += deltaTime;
 
@@ -31,6 +23,11 @@ namespace dae
         auto pos = transform->GetWorldPosition();
         pos.y -= k_floatSpeed * deltaTime;
         transform->SetLocalPosition(pos);
+
+        if (m_timer >= m_duration)
+            return std::make_unique<DeadState>();
+
+        return nullptr;
     }
 
     void BubbledState::OnExit(GameObject*)

@@ -19,17 +19,13 @@ namespace dae
         owner->GetTransform()->SetLocalPosition(k_respawnX, k_respawnY, 0.f);
     }
 
-    std::unique_ptr<CharacterState> DeadState::HandleInput(GameObject*)
+    std::unique_ptr<CharacterState> DeadState::HandleInput(GameObject*, float deltaTime)
     {
+        m_timer += deltaTime;
         if (m_timer >= m_duration)
             return std::make_unique<WanderingState>();
 
         return nullptr;
-    }
-
-    void DeadState::Update(GameObject*, float deltaTime)
-    {
-        m_timer += deltaTime;
     }
 
     void DeadState::OnExit(GameObject*)

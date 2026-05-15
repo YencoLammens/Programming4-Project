@@ -17,12 +17,7 @@ namespace dae
         m_direction = 1.f;
     }
 
-    std::unique_ptr<CharacterState> WanderingState::HandleInput(GameObject*)
-    {
-        return nullptr;
-    }
-
-    void WanderingState::Update(GameObject* owner, float deltaTime)
+    std::unique_ptr<CharacterState> WanderingState::HandleInput(GameObject* owner, float deltaTime)
     {
         auto* transform = owner->GetTransform();
         auto pos = transform->GetWorldPosition();
@@ -41,6 +36,7 @@ namespace dae
         }
 
         transform->SetLocalPosition(pos);
+        return nullptr;
     }
 
     void WanderingState::OnExit(GameObject*)

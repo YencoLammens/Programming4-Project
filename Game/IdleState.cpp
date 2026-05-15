@@ -7,13 +7,9 @@ namespace dae
     {
     }
 
-    std::unique_ptr<CharacterState> IdleState::HandleInput(GameObject*)
+    std::unique_ptr<CharacterState> IdleState::HandleInput(GameObject*, float)
     {
         return nullptr;
-    }
-
-    void IdleState::Update(GameObject*, float)
-    {
     }
 
     void IdleState::OnExit(GameObject*)

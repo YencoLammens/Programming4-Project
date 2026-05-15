@@ -16,16 +16,12 @@ namespace dae
         owner->GetComponent<HealthComponent>()->LoseLife();
     }
 
-    std::unique_ptr<CharacterState> HurtState::HandleInput(GameObject*)
+    std::unique_ptr<CharacterState> HurtState::HandleInput(GameObject*, float deltaTime)
     {
+        m_timer += deltaTime;
         if (m_timer >= m_duration)
             return std::make_unique<IdleState>();
         return nullptr;
-    }
-
-    void HurtState::Update(GameObject*, float deltaTime)
-    {
-        m_timer += deltaTime;
     }
 
     void HurtState::OnExit(GameObject*)
