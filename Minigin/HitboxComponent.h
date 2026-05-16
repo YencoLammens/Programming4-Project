@@ -2,6 +2,8 @@
 #include "BaseComponent.h"
 #include "Subject.h"
 #include "Rectf.h"
+#include "CollisionLayer.h"
+
 namespace dae
 {
     class HitboxComponent final : public BaseComponent, public Subject
@@ -26,10 +28,14 @@ namespace dae
         float GetHeight() const { return m_height; }
         Rectf GetHitBox() const { return m_hitBox; }
 
+        CollisionLayer GetLayer() const { return m_layer; }
+        void SetLayer(CollisionLayer layer) { m_layer = layer; }
+
     private:
         float m_width;
         float m_height;
         Rectf m_hitBox;
         HitboxComponent* m_pOverlapPartner{ nullptr };
+        CollisionLayer m_layer{ CollisionLayer::None };
     };
 }

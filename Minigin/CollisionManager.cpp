@@ -12,6 +12,19 @@ namespace dae
     void CollisionManager::Unregister(HitboxComponent* hitbox)
     {
         m_hitboxes.erase(std::remove(m_hitboxes.begin(), m_hitboxes.end(), hitbox), m_hitboxes.end());
+
+        for (auto it = m_activeOverlaps.begin(); it != m_activeOverlaps.end(); )
+        {
+            if (it->first == hitbox || it->second == hitbox)
+            {
+                it = m_activeOverlaps.erase(it);
+            }
+                
+            else
+            {
+                ++it;
+            }
+        }
     }
 
     void CollisionManager::Update()
