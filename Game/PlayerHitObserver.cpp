@@ -2,6 +2,7 @@
 #include "HitboxComponent.h"
 #include "CharacterStateComponent.h"
 #include "HurtState.h"
+#include "CollisionLayer.h"
 
 namespace dae
 {
@@ -20,7 +21,11 @@ namespace dae
     void PlayerHitObserver::Notify(EventId id)
     {
         if (id == make_sdbm_hash("OnOverlapBegin"))
-            m_pStateComp->SetState(std::make_unique<HurtState>());
+        {
+            auto* partner = m_pHitbox->GetOverlapPartner();
+            if (partner && partner->GetLayer() == CollisionLayer::Enemy)
+                m_pStateComp->SetState(std::make_unique<HurtState>());
+        }
     }
 
     void PlayerHitObserver::OnSubjectDestroyed()
