@@ -35,13 +35,18 @@
 #include "IdleState.h"
 #include "CollisionManager.h"
 #include "PlayerHitObserver.h"
+#include "FacingComponent.h"
+#include "CollisionLayer.h"
+#include "BubblePoolComponent.h"
+#include "ShootBubbleCommand.h"
+#include "EnemyBubbledObserver.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
 	
 static void load()
 {
-	//Service locator + sound system setup
+    //Service locator + sound system setup
 #ifdef _DEBUG
     dae::ServiceLocator::RegisterSoundSystem(
         std::make_unique<dae::LoggingSoundSystem>(std::make_unique<dae::SDLSoundSystem>()));
@@ -49,12 +54,17 @@ static void load()
     dae::ServiceLocator::RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
 #endif
 
-    dae::ServiceLocator::GetSoundSystem().AddSound(0, "Data/Sounds/TestSong.mp3");
-   // dae::ServiceLocator::GetSoundSystem().Play(0, 1.f);
+    //dae::ServiceLocator::GetSoundSystem().AddSound(0, "Data/Sounds/TestSong.mp3");
+    dae::ServiceLocator::GetSoundSystem().AddSound(0, "Data/Sounds/BubbleBobbleTheme.mp3");
+	dae::ServiceLocator::GetSoundSystem().AddSound(1, "Data/Sounds/BubblePop.mp3");
+    dae::ServiceLocator::GetSoundSystem().AddSound(2, "Data/Sounds/Score.mp3");
+    dae::ServiceLocator::GetSoundSystem().AddSound(3, "Data/Sounds/Death.mp3");
+    // dae::ServiceLocator::GetSoundSystem().Play(0, 1.f);
 
     //Collision manager set up
     dae::ServiceLocator::RegisterCollisionManager(std::make_unique<dae::CollisionManager>());
 
+    //-----------------------------------------------------------
     //Scene setup
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
 
@@ -95,17 +105,25 @@ static void load()
 
     go = std::make_unique<dae::GameObject>();
     go->GetTransform()->SetLocalPosition(10, 100, 0);
-    go->AddComponent<dae::TextComponent>("Keyboard: WASD to move Bubblun, C to lose health, X to gain points, B to make the enemy enter bubbled state", fontSmall);
+    go->AddComponent<dae::TextComponent>("Keyboard: WASD to move Bubblun, C to lose health, X to gain points, SPACE to fire bubble", fontSmall);
     scene.Add(std::move(go));
+
+    //Bubble object pool
+    auto* bubbleTexture = dae::ResourceManager::GetInstance().LoadTexture("Bubble.png");
+    auto bubblePoolGO = std::make_unique<dae::GameObject>();
+    auto* bubblePoolPtr = bubblePoolGO->AddComponent<dae::BubblePoolComponent>(&scene, bubbleTexture);
+    scene.Add(std::move(bubblePoolGO));
 
     //Player 1
     auto player1 = std::make_unique<dae::GameObject>();
     auto* renderComponent3 = player1->AddComponent<dae::RenderComponent>();
-    renderComponent3->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("Bubblun.png"));
+    renderComponent3->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("BubblunWalking.png"));
     player1->GetTransform()->SetLocalPosition(300, 300, 0);
     auto* health1 = player1->AddComponent<dae::HealthComponent>(3);
     auto* score1 = player1->AddComponent<dae::ScoreComponent>();
-	auto* hitboxComponent1 = player1->AddComponent<dae::HitboxComponent>(32.f, 32.f);
+    auto* hitboxComponent1 = player1->AddComponent<dae::HitboxComponent>(32.f, 32.f);
+    hitboxComponent1->SetLayer(dae::CollisionLayer::Player);
+    player1->AddComponent<dae::FacingComponent>();
     auto* p1State = player1->AddComponent<dae::CharacterStateComponent>(std::make_unique<dae::IdleState>());
     player1->AddComponent<dae::PlayerHitObserver>(hitboxComponent1, p1State);
     dae::GameObject* p1 = player1.get();
@@ -132,6 +150,8 @@ static void load()
     auto* health2 = player2->AddComponent<dae::HealthComponent>(3);
     auto* score2 = player2->AddComponent<dae::ScoreComponent>();
     auto* hitboxComponent2 = player2->AddComponent<dae::HitboxComponent>(32.f, 32.f);
+    hitboxComponent2->SetLayer(dae::CollisionLayer::Player);
+    player2->AddComponent<dae::FacingComponent>();
     auto* p2State = player2->AddComponent<dae::CharacterStateComponent>(std::make_unique<dae::IdleState>());
     player2->AddComponent<dae::PlayerHitObserver>(hitboxComponent2, p2State);
     dae::GameObject* p2 = player2.get();
@@ -155,9 +175,14 @@ static void load()
     auto* enemyRender = enemy->AddComponent<dae::RenderComponent>();
     enemyRender->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("Maita.png"));
     enemy->GetTransform()->SetLocalPosition(200.f, 400.f, 0.f);
-    enemy->AddComponent<dae::HitboxComponent>(32.f, 32.f);
+    auto* enemyHitbox = enemy->AddComponent<dae::HitboxComponent>(32.f, 32.f);
+    enemyHitbox->SetLayer(dae::CollisionLayer::Enemy);
     auto* enemyState = enemy->AddComponent<dae::CharacterStateComponent>(std::make_unique<dae::WanderingState>());
+    enemy->AddComponent<dae::EnemyBubbledObserver>(enemyHitbox, enemyState);
+    dae::GameObject* enemyPtr = enemy.get();
 
+
+    //-----------------------------------------------------------
     //Keyboard inputs
     auto& input = dae::InputManager::GetInstance();
     //Movement
@@ -168,6 +193,7 @@ static void load()
     //Misc
     input.BindCommand(SDL_SCANCODE_C, dae::KeyState::Down, std::make_unique<dae::LoseHealthCommand>(p1, health1));
     input.BindCommand(SDL_SCANCODE_X, dae::KeyState::Down, std::make_unique<dae::AddPointsCommand>(p1, score1, 10));
+    input.BindCommand(SDL_SCANCODE_SPACE, dae::KeyState::Down, std::make_unique<dae::ShootBubbleCommand>(p1, bubblePoolPtr));
 
     //Controller inputs
     //Movement
@@ -178,11 +204,12 @@ static void load()
     //Misc
     input.BindCommand(0, dae::Controller::ControllerButton::ButtonX, dae::KeyState::Down, std::make_unique<dae::LoseHealthCommand>(p2, health2));
     input.BindCommand(0, dae::Controller::ControllerButton::ButtonA, dae::KeyState::Down, std::make_unique<dae::AddPointsCommand>(p2, score2, 10));
+    input.BindCommand(0, dae::Controller::ControllerButton::ButtonY, dae::KeyState::Down, std::make_unique<dae::ShootBubbleCommand>(p2, bubblePoolPtr));
 
     //Sound test
     //input.BindCommand(SDL_SCANCODE_Z, dae::KeyState::Down, std::make_unique<dae::PlaySoundCommand>(0, 1.0f));
 
-    input.BindCommand(SDL_SCANCODE_B, dae::KeyState::Down, std::make_unique<dae::BubbleHitCommand>(enemy.get(), enemyState));
+    //input.BindCommand(SDL_SCANCODE_B, dae::KeyState::Down, std::make_unique<dae::BubbleHitCommand>(enemyPtr, enemyState));
     scene.Add(std::move(enemy));
 }
 

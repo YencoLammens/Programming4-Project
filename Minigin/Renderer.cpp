@@ -82,4 +82,13 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
+void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const SDL_FlipMode flip) const
+{
+	SDL_FRect dst{};
+	dst.x = x;
+	dst.y = y;
+	SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
+	SDL_RenderTextureRotated(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, 0.0, nullptr, flip);
+}
+
 SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }

@@ -58,7 +58,10 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
   "Game/IdleState.cpp" 
   "Game/HurtState.cpp"
   "Game/PlayerHitObserver.cpp"
-)
+  "Game/BubbleComponent.cpp" 
+  "Game/BubblePoolComponent.cpp" 
+  "Game/EnemyBubbledObserver.cpp" 
+  "Game/ShootBubbleCommand.cpp")
  
 # enable c++20 features
 target_compile_features(minigin PUBLIC cxx_std_20)

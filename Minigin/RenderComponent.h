@@ -24,7 +24,7 @@ namespace dae
 
 		void SetTexture(Texture2D* texture);
 		void SetEnabled(bool enabled) { m_enabled = enabled; }
-
+		void SetFlipX(bool flip) { m_flipX = flip; }
 	private:
 		Texture2D* m_texture;
 		/*SDL_Rect m_sourceRect{};*/
@@ -32,5 +32,6 @@ namespace dae
 
 		/*bool m_useSourceRect{ false };*/
 		bool m_enabled{ true };
+		bool m_flipX{ false };
 	};
 }

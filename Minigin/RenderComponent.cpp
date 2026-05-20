@@ -28,12 +28,16 @@ void dae::RenderComponent::FixedUpdate(float)
 void dae::RenderComponent::Render() const
 {
 	if (!m_texture || !m_enabled) return;
-
-	auto* transform = GetOwner()->GetTransform();
-	const auto pos = transform->GetWorldPosition();
-
-	// Default static rendering
-	Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y);
+	const auto pos = GetOwner()->GetTransform()->GetWorldPosition();
+	if (m_flipX)
+	{
+		Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y, SDL_FLIP_HORIZONTAL);
+	}	
+	else
+	{
+		// Default static rendering
+		Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y);
+	}
 }
 
 void dae::RenderComponent::SetTexture(Texture2D* texture)

@@ -1,5 +1,6 @@
 #include "ScoreComponent.h"
 #include "EventId.h"
+#include "ServiceLocator.h"
 
 namespace dae
 {
@@ -12,5 +13,6 @@ namespace dae
     {
         m_score += points;
         NotifyObservers(make_sdbm_hash("PointsGained"));
+		ServiceLocator::GetSoundSystem().Play(2, 1.f);
     }
 }
