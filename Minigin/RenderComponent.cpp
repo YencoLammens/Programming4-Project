@@ -29,10 +29,15 @@ void dae::RenderComponent::Render() const
 {
 	if (!m_texture || !m_enabled) return;
 	const auto pos = GetOwner()->GetTransform()->GetWorldPosition();
-	if (m_flipX)
+	if (m_useSourceRect)
+	{
+		const SDL_FlipMode flip = m_flipX ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+		Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y, m_sourceRect, flip);
+	}
+	else if (m_flipX)
 	{
 		Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y, SDL_FLIP_HORIZONTAL);
-	}	
+	}
 	else
 	{
 		// Default static rendering

@@ -11,6 +11,8 @@ namespace dae
         void Register(HitboxComponent* hitbox) override;
         void Unregister(HitboxComponent* hitbox) override;
         void Update() override;
+        std::vector<HitboxComponent*> QueryLayer(CollisionLayer layer) const override;
+
     private:
         std::vector<HitboxComponent*> m_hitboxes;
         std::set<std::pair<HitboxComponent*, HitboxComponent*>> m_activeOverlaps;

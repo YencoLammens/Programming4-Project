@@ -1,4 +1,7 @@
 #pragma once
+#include <vector>
+#include "CollisionLayer.h"
+
 namespace dae
 {
     class HitboxComponent;
@@ -14,7 +17,9 @@ namespace dae
         virtual void Register(HitboxComponent* hitbox) = 0;
         virtual void Unregister(HitboxComponent* hitbox) = 0;
         virtual void Update() = 0;
+        virtual std::vector<HitboxComponent*> QueryLayer(CollisionLayer layer) const = 0;
+
     protected:
         ICollisionManager() = default;
     };
-}
+}       

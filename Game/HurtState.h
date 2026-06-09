@@ -1,17 +1,17 @@
 #pragma once
-#include "CharacterState.h"
+#include "PlayerCharacterState.h"
 
 namespace dae
 {
-    class HurtState final : public CharacterState
+    class HurtState final : public PlayerCharacterState
     {
     public:
         explicit HurtState(float duration = 2.f);
         ~HurtState() override = default;
 
-        void OnEnter(GameObject* owner) override;
-        std::unique_ptr<CharacterState> HandleInput(GameObject* owner, float deltaTime) override;
-        void OnExit(GameObject* owner) override;
+        void OnEnter(PlayerStateController* controller) override;
+        std::unique_ptr<PlayerCharacterState> Update(PlayerStateController* controller, float deltaTime) override;
+        void OnExit(PlayerStateController* controller) override;
 
     private:
         float m_duration;

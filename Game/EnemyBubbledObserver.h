@@ -5,12 +5,13 @@
 namespace dae
 {
     class HitboxComponent;
-    class CharacterStateComponent;
+    class ZenChanStateController;
+    class FoodPoolComponent;
 
     class EnemyBubbledObserver final : public BaseComponent, public Observer
     {
     public:
-        EnemyBubbledObserver(GameObject* owner, HitboxComponent* hitbox, CharacterStateComponent* stateComp);
+        EnemyBubbledObserver(GameObject* owner, HitboxComponent* hitbox, ZenChanStateController* stateController, FoodPoolComponent* foodPool);
         ~EnemyBubbledObserver() override;
         EnemyBubbledObserver(const EnemyBubbledObserver&) = delete;
         EnemyBubbledObserver& operator=(const EnemyBubbledObserver&) = delete;
@@ -24,6 +25,7 @@ namespace dae
 
     private:
         HitboxComponent* m_pHitbox;
-        CharacterStateComponent* m_pStateComp;
+        ZenChanStateController* m_pStateController;
+        FoodPoolComponent* m_pFoodPool;
     };
 }

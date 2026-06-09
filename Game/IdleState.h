@@ -1,16 +1,16 @@
 #pragma once
-#include "CharacterState.h"
+#include "PlayerCharacterState.h"
 
 namespace dae
 {
-    class IdleState final : public CharacterState
+    class IdleState final : public PlayerCharacterState
     {
     public:
         IdleState() = default;
         ~IdleState() override = default;
 
-        void OnEnter(GameObject* owner) override;
-        std::unique_ptr<CharacterState> HandleInput(GameObject* owner, float deltaTime) override;
-        void OnExit(GameObject* owner) override;
+        void OnEnter(PlayerStateController* controller) override;
+        std::unique_ptr<PlayerCharacterState> Update(PlayerStateController* controller, float deltaTime) override;
+        void OnExit(PlayerStateController* controller) override;
     };
 }

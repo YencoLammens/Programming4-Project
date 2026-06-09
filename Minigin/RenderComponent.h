@@ -9,7 +9,7 @@
 
 namespace dae
 {
-	class RenderComponent final: public BaseComponent
+	class RenderComponent final : public BaseComponent
 	{
 	public:
 		RenderComponent(GameObject* owner);
@@ -25,12 +25,14 @@ namespace dae
 		void SetTexture(Texture2D* texture);
 		void SetEnabled(bool enabled) { m_enabled = enabled; }
 		void SetFlipX(bool flip) { m_flipX = flip; }
+		void SetSourceRect(const SDL_FRect& rect) { m_sourceRect = rect; m_useSourceRect = true; }
+		void ClearSourceRect() { m_useSourceRect = false; }
 	private:
 		Texture2D* m_texture;
-		/*SDL_Rect m_sourceRect{};*/
+		SDL_FRect m_sourceRect{};
 		glm::vec3 m_position;
 
-		/*bool m_useSourceRect{ false };*/
+		bool m_useSourceRect{ false };
 		bool m_enabled{ true };
 		bool m_flipX{ false };
 	};

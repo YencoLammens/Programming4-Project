@@ -1,13 +1,12 @@
 #include "PlayerHitObserver.h"
 #include "HitboxComponent.h"
-#include "CharacterStateComponent.h"
-#include "HurtState.h"
+#include "PlayerStateController.h"
 #include "CollisionLayer.h"
 
 namespace dae
 {
-    PlayerHitObserver::PlayerHitObserver(GameObject* owner, HitboxComponent* hitbox, CharacterStateComponent* stateComp)
-        : BaseComponent(owner), m_pHitbox(hitbox), m_pStateComp(stateComp)
+    PlayerHitObserver::PlayerHitObserver(GameObject* owner, HitboxComponent* hitbox, PlayerStateController* stateController)
+        : BaseComponent(owner), m_pHitbox(hitbox), m_stateController(stateController)
     {
         m_pHitbox->AddObserver(this);
     }
@@ -24,7 +23,7 @@ namespace dae
         {
             auto* partner = m_pHitbox->GetOverlapPartner();
             if (partner && partner->GetLayer() == CollisionLayer::Enemy)
-                m_pStateComp->SetState(std::make_unique<HurtState>());
+                m_stateController->OnHurt();
         }
     }
 

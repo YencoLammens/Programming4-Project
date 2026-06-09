@@ -7,6 +7,10 @@ namespace dae
         None = 0,
         Player,
         Enemy,
-        Bubble
+        Bubble,
+        Platform,
+        Wall,
+        BubbledEnemy,
+        Food
     };
 }

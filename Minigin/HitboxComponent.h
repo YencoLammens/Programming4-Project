@@ -24,7 +24,7 @@ namespace dae
         void EndOverlap(HitboxComponent* other);
         HitboxComponent* GetOverlapPartner() const { return m_pOverlapPartner; }
 
-        float GetWidth()  const { return m_width; }
+        float GetWidth() const { return m_width; }
         float GetHeight() const { return m_height; }
         Rectf GetHitBox() const { return m_hitBox; }
 

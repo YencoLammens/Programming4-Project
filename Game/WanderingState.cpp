@@ -1,45 +1,62 @@
 #include "WanderingState.h"
-#include "GameObject.h"
-#include "Transform.h"
+#include "ZenChanStateController.h"
+#include "HitboxComponent.h"
+#include "PhysicsComponent.h"
+#include "FacingComponent.h"
+#include "RenderComponent.h"
+#include "AnimationComponent.h"
+#include "ServiceLocator.h"
+#include "ICollisionManager.h"
+#include "CollisionLayer.h"
+#include "EventId.h"
 
 namespace dae
 {
-    static constexpr float k_screenLeft = 0.f;
-    static constexpr float k_screenRight = 1024.f;
-
     WanderingState::WanderingState(float speed)
-        : m_speed(speed), m_direction(1.f)
+        : m_speed(speed)
     {
     }
 
-    void WanderingState::OnEnter(GameObject*)
+    void WanderingState::OnEnter(ZenChanStateController* controller)
     {
         m_direction = 1.f;
+        if (auto* anim = controller->GetAnimationComponent())
+            anim->Play(make_sdbm_hash("walk"));
     }
 
-    std::unique_ptr<CharacterState> WanderingState::HandleInput(GameObject* owner, float deltaTime)
+    std::unique_ptr<ZenChanCharacterState> WanderingState::Update(ZenChanStateController* controller, float)
     {
-        auto* transform = owner->GetTransform();
-        auto pos = transform->GetWorldPosition();
-
-        pos.x += m_direction * m_speed * deltaTime;
-
-        if (pos.x >= k_screenRight)
+        if (auto* hitbox = controller->GetHitboxComponent())
         {
-            pos.x = k_screenRight;
-            m_direction = -1.f;
-        }
-        else if (pos.x <= k_screenLeft)
-        {
-            pos.x = k_screenLeft;
-            m_direction = 1.f;
+            const auto rect = hitbox->GetHitBox();
+            const auto walls = ServiceLocator::GetCollisionManager().QueryLayer(CollisionLayer::Wall);
+
+            for (const auto* wall : walls)
+            {
+                const auto w = wall->GetHitBox();
+                if (rect.y + rect.height <= w.y || rect.y >= w.y + w.height)
+                    continue;
+                if (m_direction > 0.f && rect.x + rect.width + k_wallMargin >= w.x && rect.x < w.x)
+                {
+                    m_direction = -1.f;
+                    break;
+                }
+                else if (m_direction < 0.f && rect.x - k_wallMargin <= w.x + w.width && rect.x + rect.width > w.x + w.width)
+                {
+                    m_direction = 1.f;
+                    break;
+                }
+            }
         }
 
-        transform->SetLocalPosition(pos);
+        if (auto* facing = controller->GetFacingComponent())  facing->SetFacing(m_direction);
+        if (auto* render = controller->GetRenderComponent())   render->SetFlipX(m_direction > 0.f);
+        if (auto* physics = controller->GetPhysicsComponent())  physics->SetHorizontalVelocity(m_direction * m_speed);
+
         return nullptr;
     }
 
-    void WanderingState::OnExit(GameObject*)
+    void WanderingState::OnExit(ZenChanStateController*)
     {
     }
 }

@@ -1,7 +1,10 @@
 #include "HurtState.h"
 #include "IdleState.h"
+#include "WalkingState.h"
+#include "PlayerStateController.h"
+#include "AnimationComponent.h"
 #include "HealthComponent.h"
-#include "GameObject.h"
+#include "EventId.h"
 
 namespace dae
 {
@@ -10,21 +13,26 @@ namespace dae
     {
     }
 
-    void HurtState::OnEnter(GameObject* owner)
+    void HurtState::OnEnter(PlayerStateController* controller)
     {
         m_timer = 0.f;
-        owner->GetComponent<HealthComponent>()->LoseLife();
+        if (auto* health = controller->GetHealthComponent())
+            health->LoseLife();
+        if (auto* anim = controller->GetAnimationComponent())
+            anim->Play(make_sdbm_hash("hurt"));
     }
 
-    std::unique_ptr<CharacterState> HurtState::HandleInput(GameObject*, float deltaTime)
+    std::unique_ptr<PlayerCharacterState> HurtState::Update(PlayerStateController* controller, float deltaTime)
     {
         m_timer += deltaTime;
-        if (m_timer >= m_duration)
-            return std::make_unique<IdleState>();
-        return nullptr;
+        if (m_timer < m_duration)
+            return nullptr;
+        if (controller->IsMoving())
+            return std::make_unique<WalkingState>();
+        return std::make_unique<IdleState>();
     }
 
-    void HurtState::OnExit(GameObject*)
+    void HurtState::OnExit(PlayerStateController*)
     {
     }
 }

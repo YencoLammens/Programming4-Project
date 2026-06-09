@@ -64,7 +64,9 @@ namespace dae
         if (event == make_sdbm_hash("OnOverlapBegin"))
         {
             auto* partner = m_hitbox->GetOverlapPartner();
-            if (partner && partner->GetLayer() == CollisionLayer::Enemy)
+            if (!partner) return;
+            const CollisionLayer layer = partner->GetLayer();
+            if (layer == CollisionLayer::Enemy || layer == CollisionLayer::BubbledEnemy)
                 m_pendingRelease = true;
         }
     }

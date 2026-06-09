@@ -62,4 +62,15 @@ namespace dae
 
         m_activeOverlaps = currentOverlaps;
     }
+
+    std::vector<HitboxComponent*> CollisionManager::QueryLayer(CollisionLayer layer) const
+    {
+        std::vector<HitboxComponent*> result;
+        for (auto* hitbox : m_hitboxes)
+        {
+            if (hitbox->GetLayer() == layer)
+                result.push_back(hitbox);
+        }
+        return result;
+    }
 }

@@ -19,10 +19,11 @@ namespace dae
 
 		void MarkForDeletion() { m_toBeDeleted = true; };
 		bool IsMarkedForDeletion() { return m_toBeDeleted; }
-	protected:
-		explicit BaseComponent(GameObject* pOwner) : m_pOwner(pOwner) {}
 		GameObject* GetOwner() const { return m_pOwner; }
 
+	protected:
+		explicit BaseComponent(GameObject* pOwner) : m_pOwner(pOwner) {}
+		
 	private:
 		bool m_toBeDeleted = false;
 	};

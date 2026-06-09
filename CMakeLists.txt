@@ -29,39 +29,44 @@ add_library(minigin STATIC
   "Minigin/RenderComponent.cpp"
   "Minigin/Command.cpp"
   "Minigin/Controller.cpp"
-  "Minigin/Subject.cpp" 
-  "Minigin/ServiceLocator.cpp" 
+  "Minigin/Subject.cpp"
+  "Minigin/ServiceLocator.cpp"
   "Minigin/LoggingSoundSystem.cpp"
-  "Minigin/SDLSoundSystem.cpp"  
+  "Minigin/SDLSoundSystem.cpp"
   "Minigin/HitboxComponent.cpp"
   "Minigin/CollisionManager.cpp"
   "Minigin/Rectf.cpp"
-)
+  "Minigin/AnimationComponent.cpp"
+  "Minigin/PhysicsComponent.cpp")
  
 add_executable(${GAME_NAME} ${TARGET_PARAM}
   Game/Main.cpp
   "Game/FPSComponent.cpp"
-  "Game/RotatorComponent.cpp"
   "Game/MoveCommand.cpp"
-  "Game/HealthComponent.cpp" 
-  "Game/ScoreComponent.cpp" 
-  "Game/ScoreDisplay.cpp" 
+  "Game/HealthComponent.cpp"
+  "Game/ScoreComponent.cpp"
+  "Game/ScoreDisplay.cpp"
   "Game/HealthDisplay.cpp"
-  "Game/AddPointsCommand.cpp" 
-  "Game/LoseHealthCommand.cpp"
-  "Game/PlaySoundCommand.cpp"
-  "Game/CharacterStateComponent.cpp"
   "Game/WanderingState.cpp"
   "Game/BubbledState.cpp"
-  "Game/DeadState.cpp"
-  "Game/BubbleHitCommand.cpp" 
-  "Game/IdleState.cpp" 
+  "Game/IdleState.cpp"
   "Game/HurtState.cpp"
   "Game/PlayerHitObserver.cpp"
-  "Game/BubbleComponent.cpp" 
-  "Game/BubblePoolComponent.cpp" 
-  "Game/EnemyBubbledObserver.cpp" 
-  "Game/ShootBubbleCommand.cpp")
+  "Game/BubbleComponent.cpp"
+  "Game/BubblePoolComponent.cpp"
+  "Game/EnemyBubbledObserver.cpp"
+  "Game/ShootBubbleCommand.cpp"
+  "Game/WalkingState.cpp"
+  "Game/FiringState.cpp"
+  "Game/JumpingState.cpp"
+  "Game/CameraComponent.cpp"
+  "Game/JumpCommand.cpp"
+  "Game/TilemapLoader.cpp" 
+  "Game/PoppedState.cpp" 
+  "Game/PlayerStateController.cpp" 
+  "Game/FoodPoolComponent.cpp" 
+  "Game/PickupComponent.cpp" 
+  "Game/ZenChanStateController.cpp")
  
 # enable c++20 features
 target_compile_features(minigin PUBLIC cxx_std_20)
@@ -172,6 +177,17 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(imgui)
+
+# nlohmann/json
+FetchContent_Declare(
+  nlohmann_json
+  GIT_REPOSITORY https://github.com/nlohmann/json.git
+  GIT_TAG v3.11.3
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+)
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+FetchContent_MakeAvailable(nlohmann_json)
  
 add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/imgui.cpp
@@ -229,7 +245,7 @@ if(Steamworks_FOUND)
   target_compile_definitions(minigin PRIVATE USE_STEAMWORKS)
 endif()
  
-target_link_libraries(${GAME_NAME} PUBLIC minigin)
+target_link_libraries(${GAME_NAME} PUBLIC minigin nlohmann_json::nlohmann_json)
  
 if(EMSCRIPTEN)
   set(EMSCRIPTEN_COMPILE_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -g")

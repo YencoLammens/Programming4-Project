@@ -6,12 +6,12 @@
 namespace dae
 {
     class HitboxComponent;
-    class CharacterStateComponent;
+    class PlayerStateController;
 
     class PlayerHitObserver final : public BaseComponent, public Observer
     {
     public:
-        PlayerHitObserver(GameObject* owner, HitboxComponent* hitbox, CharacterStateComponent* stateComp);
+        PlayerHitObserver(GameObject* owner, HitboxComponent* hitbox, PlayerStateController* stateComp);
         ~PlayerHitObserver() override;
         PlayerHitObserver(const PlayerHitObserver&) = delete;
         PlayerHitObserver& operator=(const PlayerHitObserver&) = delete;
@@ -26,6 +26,6 @@ namespace dae
 
     private:
         HitboxComponent* m_pHitbox;
-        CharacterStateComponent* m_pStateComp;
+        PlayerStateController* m_stateController;
     };
 }

@@ -3,23 +3,21 @@
 
 namespace dae
 {
-    class BubblePoolComponent;
-    class FacingComponent;
+    class PlayerStateController;
 
     class ShootBubbleCommand final : public GameObjectCommand
     {
     public:
-        ShootBubbleCommand(GameObject* player, BubblePoolComponent* pool);
+        ShootBubbleCommand(GameObject* player, PlayerStateController* stateController);
         ~ShootBubbleCommand() override = default;
         ShootBubbleCommand(const ShootBubbleCommand&) = delete;
         ShootBubbleCommand& operator=(const ShootBubbleCommand&) = delete;
         ShootBubbleCommand(ShootBubbleCommand&&) = delete;
         ShootBubbleCommand& operator=(ShootBubbleCommand&&) = delete;
 
-        void Execute(float deltaTime) override;
+        void Execute(float) override;
 
     private:
-        BubblePoolComponent* m_pool;
-        FacingComponent* m_facing;
+        PlayerStateController* m_stateController;
     };
 }
