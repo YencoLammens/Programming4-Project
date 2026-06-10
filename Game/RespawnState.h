@@ -3,11 +3,11 @@
 
 namespace dae
 {
-    class HurtState final : public PlayerCharacterState
+    class RespawnState final : public PlayerCharacterState
     {
     public:
-        explicit HurtState(float duration = 2.f);
-        ~HurtState() override = default;
+        explicit RespawnState(float duration = 0.5f, float invincibilityDuration = 2.f);
+        ~RespawnState() override = default;
 
         void OnEnter(PlayerStateController* controller) override;
         std::unique_ptr<PlayerCharacterState> Update(PlayerStateController* controller, float deltaTime) override;
@@ -16,6 +16,7 @@ namespace dae
 
     private:
         float m_duration;
+        float m_invincibilityDuration;
         float m_timer{ 0.f };
     };
 }

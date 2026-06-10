@@ -5,6 +5,7 @@
 #include "ICollisionManager.h"
 #include "ServiceLocator.h"
 #include "CollisionLayer.h"
+#include "Utils.h"
 
 namespace dae
 {
@@ -42,6 +43,7 @@ namespace dae
         transform->SetLocalPosition(pos);
 
         ResolvePlatforms(prevBottom, transform);
+        ResolveBubbles(transform);
         ResolveWalls(transform);
     }
 
@@ -140,5 +142,28 @@ namespace dae
 
         if (resolved)
             transform->SetLocalPosition(pos);
+    }
+
+    void PhysicsComponent::ResolveBubbles(Transform* transform)
+    {
+        if (m_isGrounded) return;
+        if (m_velocityY <= 0.f) return;
+
+        glm::vec3 pos = transform->GetLocalPosition();
+
+        const float charLeft = pos.x;
+        const float charRight = pos.x + m_hitbox->GetWidth();
+        const float charTop = pos.y;
+        const float charBottom = pos.y + m_hitbox->GetHeight();
+
+        const auto bubbles = ServiceLocator::GetCollisionManager().QueryLayer(CollisionLayer::Bubble);
+        for (auto* bubble : bubbles)
+        {
+            const auto r = bubble->GetHitBox();
+            if (!IsOverlapping({ charLeft, charTop, charRight - charLeft, charBottom - charTop }, r))
+				continue;
+            m_isGrounded = true;
+            return;
+        }
     }
 }

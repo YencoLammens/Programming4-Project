@@ -12,6 +12,9 @@ dae::MoveCommand::MoveCommand(GameObject* pGameObject, const glm::vec3& directio
 
 void dae::MoveCommand::Execute(float deltaTime)
 {
+    if (m_stateController && m_stateController->IsMovementBlocked())
+        return;
+
     if (m_direction.x != 0.f)
     {
         if (m_facing)

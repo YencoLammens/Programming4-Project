@@ -164,7 +164,7 @@ static void load()
     auto player1 = std::make_unique<dae::GameObject>();
     auto* renderComponent3 = player1->AddComponent<dae::RenderComponent>();
     renderComponent3->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("BubblunWalking.png"));
-    player1->GetTransform()->SetLocalPosition(300, 300, 0);
+    player1->GetTransform()->SetLocalPosition(20.f, 340.f, 0.f);
     auto* health1 = player1->AddComponent<dae::HealthComponent>(3);
     auto* score1 = player1->AddComponent<dae::ScoreComponent>();
     auto* hitboxComponent1 = player1->AddComponent<dae::HitboxComponent>(16.f, 16.f);
@@ -181,6 +181,7 @@ static void load()
     anim1->Play(dae::make_sdbm_hash("idle"));
     auto* p1State = player1->AddComponent<dae::PlayerStateController>(std::make_unique<dae::IdleState>(), bubblePoolPtr);
     player1->AddComponent<dae::PlayerHitObserver>(hitboxComponent1, p1State);
+    p1State->SetSpawnPosition({ 20.f, 340.f, 0.f });
     dae::GameObject* p1 = player1.get();
     scene.Add(std::move(player1));
 

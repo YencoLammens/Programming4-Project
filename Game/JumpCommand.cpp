@@ -9,6 +9,8 @@ dae::JumpCommand::JumpCommand(GameObject* player, PhysicsComponent* physics, Pla
 
 void dae::JumpCommand::Execute(float)
 {
+    if (m_stateController->IsMovementBlocked())
+        return;
     m_physics->Jump();
     m_stateController->OnJump();
 }

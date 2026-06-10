@@ -18,6 +18,8 @@ namespace dae
         virtual std::unique_ptr<PlayerCharacterState> Update(PlayerStateController* controller, float deltaTime) = 0;
         virtual void OnExit(PlayerStateController* controller) = 0;
 
+        virtual bool BlocksMovement() const { return false; }
+
     protected:
         PlayerCharacterState() = default;
     };

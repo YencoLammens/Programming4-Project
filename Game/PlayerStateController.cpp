@@ -5,6 +5,7 @@
 #include "HealthComponent.h"
 #include "BubblePoolComponent.h"
 #include "GameObject.h"
+#include "Transform.h"
 
 namespace dae
 {
@@ -17,6 +18,9 @@ namespace dae
 
     void PlayerStateController::Update(float deltaTime)
     {
+        if (m_invincibilityTimer > 0.f)
+            m_invincibilityTimer -= deltaTime;
+
         if (!m_currentState) return;
         auto newState = m_currentState->Update(this, deltaTime);
         if (newState)
@@ -35,6 +39,34 @@ namespace dae
     bool PlayerStateController::IsMoving() const
     {
         return m_moveRequested;
+    }
+
+    bool PlayerStateController::IsMovementBlocked() const
+    {
+        return m_currentState && m_currentState->BlocksMovement();
+    }
+
+    bool PlayerStateController::IsInvincible() const
+    {
+        return m_invincibilityTimer > 0.f;
+    }
+
+    void PlayerStateController::SetInvincible(float duration)
+    {
+        m_invincibilityTimer = duration;
+    }
+
+    void PlayerStateController::SetSpawnPosition(const glm::vec3& pos)
+    {
+        m_spawnPosition = pos;
+    }
+
+    void PlayerStateController::Respawn()
+    {
+        if (auto* transform = GetOwner()->GetTransform())
+            transform->SetLocalPosition(m_spawnPosition);
+        if (m_physics)
+            m_physics->ResetVelocity();
     }
 
     void PlayerStateController::SetState(std::unique_ptr<PlayerCharacterState> newState)

@@ -5,6 +5,8 @@
 #include "AnimationComponent.h"
 #include "HealthComponent.h"
 #include "EventId.h"
+#include "RespawnState.h"
+#include "PhysicsComponent.h"
 
 namespace dae
 {
@@ -16,20 +18,20 @@ namespace dae
     void HurtState::OnEnter(PlayerStateController* controller)
     {
         m_timer = 0.f;
+        if (auto* physics = controller->GetPhysicsComponent())
+            physics->SetHorizontalVelocity(0.f);
         if (auto* health = controller->GetHealthComponent())
             health->LoseLife();
         if (auto* anim = controller->GetAnimationComponent())
             anim->Play(make_sdbm_hash("hurt"));
     }
 
-    std::unique_ptr<PlayerCharacterState> HurtState::Update(PlayerStateController* controller, float deltaTime)
+    std::unique_ptr<PlayerCharacterState> HurtState::Update(PlayerStateController*, float deltaTime)
     {
         m_timer += deltaTime;
         if (m_timer < m_duration)
             return nullptr;
-        if (controller->IsMoving())
-            return std::make_unique<WalkingState>();
-        return std::make_unique<IdleState>();
+        return std::make_unique<RespawnState>();
     }
 
     void HurtState::OnExit(PlayerStateController*)

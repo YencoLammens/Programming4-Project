@@ -30,6 +30,7 @@ namespace dae
     private:
         void ResolvePlatforms(float prevBottom, Transform* transform);
         void ResolveWalls(Transform* transform);
+        void ResolveBubbles(Transform* transform);
 
         static constexpr float k_gravity = 350.f;
         static constexpr float k_jumpSpeed = 250.f;
@@ -37,8 +38,8 @@ namespace dae
 
         float m_velocityX{ 0.f };
         float m_velocityY{ 0.f };
-        bool  m_isGrounded{ false };
-        bool  m_enabled{ true };
+        bool m_isGrounded{ false };
+        bool m_enabled{ true };
         HitboxComponent* m_hitbox{ nullptr };
     };
 }

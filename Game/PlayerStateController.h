@@ -2,6 +2,7 @@
 #include <memory>
 #include "BaseComponent.h"
 #include "PlayerCharacterState.h"
+#include <glm/glm.hpp>
 
 namespace dae
 {
@@ -33,6 +34,12 @@ namespace dae
         bool WasJumpRequested() const { return m_jumpRequested; }
         bool WasShootRequested() const { return m_shootRequested; }
         bool WasHurtRequested() const { return m_hurtRequested; }
+        bool IsMovementBlocked() const;
+        bool IsInvincible() const;
+
+        void SetInvincible(float duration);
+        void SetSpawnPosition(const glm::vec3& pos);
+        void Respawn();
 
         AnimationComponent* GetAnimationComponent() const { return m_animation; }
         PhysicsComponent* GetPhysicsComponent() const { return m_physics; }
@@ -51,9 +58,12 @@ namespace dae
         HealthComponent* m_health{ nullptr };
         BubblePoolComponent* m_bubblePool{ nullptr };
 
+        glm::vec3 m_spawnPosition{};
+        float m_invincibilityTimer{ 0.f };
         bool m_jumpRequested{ false };
         bool m_shootRequested{ false };
         bool m_hurtRequested{ false };
         bool m_moveRequested{ false };
+        
     };
 }

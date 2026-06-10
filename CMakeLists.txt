@@ -35,9 +35,7 @@ add_library(minigin STATIC
   "Minigin/SDLSoundSystem.cpp"
   "Minigin/HitboxComponent.cpp"
   "Minigin/CollisionManager.cpp"
-  "Minigin/Rectf.cpp"
-  "Minigin/AnimationComponent.cpp"
-  "Minigin/PhysicsComponent.cpp")
+  "Minigin/Rectf.cpp")
  
 add_executable(${GAME_NAME} ${TARGET_PARAM}
   Game/Main.cpp
@@ -70,7 +68,10 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
   "Game/BoulderComponent.cpp" 
   "Game/BoulderPoolComponent.cpp" 
   "Game/MaitaShootComponent.cpp" 
-  "Game/MaitaStateController.cpp")
+  "Game/MaitaStateController.cpp" 
+  "Game/RespawnState.cpp"
+  "Game/PhysicsComponent.cpp"
+  "Game/AnimationComponent.cpp")
  
 # enable c++20 features
 target_compile_features(minigin PUBLIC cxx_std_20)
