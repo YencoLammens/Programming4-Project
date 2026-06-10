@@ -1,6 +1,6 @@
 #include "BubbledState.h"
 #include "WanderingState.h"
-#include "ZenChanStateController.h"
+#include "IEnemyStateController.h"
 #include "HitboxComponent.h"
 #include "PhysicsComponent.h"
 #include "AnimationComponent.h"
@@ -16,7 +16,7 @@ namespace dae
     {
     }
 
-    void BubbledState::OnEnter(ZenChanStateController* controller)
+    void BubbledState::OnEnter(IEnemyStateController* controller)
     {
         m_timer = 0.f;
         if (auto* hitbox = controller->GetHitboxComponent())  hitbox->SetLayer(CollisionLayer::BubbledEnemy);
@@ -24,7 +24,7 @@ namespace dae
         if (auto* anim = controller->GetAnimationComponent()) anim->Play(make_sdbm_hash("bubbled"));
     }
 
-    std::unique_ptr<ZenChanCharacterState> BubbledState::Update(ZenChanStateController* controller, float deltaTime)
+    std::unique_ptr<EnemyCharacterState> BubbledState::Update(IEnemyStateController* controller, float deltaTime)
     {
         m_timer += deltaTime;
 
@@ -38,7 +38,7 @@ namespace dae
         return nullptr;
     }
 
-    void BubbledState::OnExit(ZenChanStateController* controller)
+    void BubbledState::OnExit(IEnemyStateController* controller)
     {
         if (auto* hitbox = controller->GetHitboxComponent())  hitbox->SetLayer(CollisionLayer::Enemy);
         if (auto* physics = controller->GetPhysicsComponent()) physics->SetEnabled(true);

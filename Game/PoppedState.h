@@ -1,22 +1,31 @@
 #pragma once
-#include "ZenChanCharacterState.h"
+#include "EnemyCharacterState.h"
 
 namespace dae
 {
-    class PoppedState final : public ZenChanCharacterState
+    class FoodPoolComponent;
+
+    class PoppedState final : public EnemyCharacterState
     {
     public:
-        explicit PoppedState(float duration = 0.6f);
+        explicit PoppedState(FoodPoolComponent* foodPool, float riseDuration = 0.4f);
         ~PoppedState() override = default;
 
-        void OnEnter(ZenChanStateController* controller) override;
-        std::unique_ptr<ZenChanCharacterState> Update(ZenChanStateController* controller, float deltaTime) override;
-        void OnExit(ZenChanStateController* controller) override;
+        void OnEnter(IEnemyStateController* controller) override;
+        std::unique_ptr<EnemyCharacterState> Update(IEnemyStateController* controller, float deltaTime) override;
+        void OnExit(IEnemyStateController* controller) override;
 
     private:
-        float m_duration;
-        float m_timer{ 0.f };
+        FoodPoolComponent* m_pFoodPool;
+        float m_riseDuration;
+        float m_riseTimer{ 0.f };
+        float m_fallTimer{ 0.f };
+        float m_horizontalDir{ 1.f };
+        bool m_falling{ false };
 
-        static constexpr float k_flySpeed = 200.f;
+        static constexpr float k_riseSpeed{ 200.f };
+        static constexpr float k_horizontalSpeed{ 80.f };
+        static constexpr float k_fallGrace{ 0.1f };
+        static constexpr float k_maxFallTime{ 5.f };
     };
 }

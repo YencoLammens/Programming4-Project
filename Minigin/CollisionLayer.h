@@ -8,6 +8,7 @@ namespace dae
         Player,
         Enemy,
         Bubble,
+        Boulder,
         Platform,
         Wall,
         BubbledEnemy,

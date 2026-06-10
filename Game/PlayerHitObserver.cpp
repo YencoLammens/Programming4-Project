@@ -22,7 +22,7 @@ namespace dae
         if (id == make_sdbm_hash("OnOverlapBegin"))
         {
             auto* partner = m_pHitbox->GetOverlapPartner();
-            if (partner && partner->GetLayer() == CollisionLayer::Enemy)
+            if (partner && (partner->GetLayer() == CollisionLayer::Enemy || partner->GetLayer() == CollisionLayer::Boulder))
                 m_stateController->OnHurt();
         }
     }

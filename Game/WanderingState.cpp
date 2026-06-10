@@ -1,5 +1,5 @@
 #include "WanderingState.h"
-#include "ZenChanStateController.h"
+#include "IEnemyStateController.h"
 #include "HitboxComponent.h"
 #include "PhysicsComponent.h"
 #include "FacingComponent.h"
@@ -9,6 +9,7 @@
 #include "ICollisionManager.h"
 #include "CollisionLayer.h"
 #include "EventId.h"
+#include <cstdlib>
 
 namespace dae
 {
@@ -17,20 +18,31 @@ namespace dae
     {
     }
 
-    void WanderingState::OnEnter(ZenChanStateController* controller)
+    void WanderingState::OnEnter(IEnemyStateController* controller)
     {
         m_direction = 1.f;
+        m_jumpInterval = 2.f + static_cast<float>(rand() % 3);
         if (auto* anim = controller->GetAnimationComponent())
             anim->Play(make_sdbm_hash("walk"));
     }
 
-    std::unique_ptr<ZenChanCharacterState> WanderingState::Update(ZenChanStateController* controller, float)
+    std::unique_ptr<EnemyCharacterState> WanderingState::Update(IEnemyStateController* controller, float deltaTime)
     {
+        m_jumpTimer += deltaTime;
+        if (auto* physics = controller->GetPhysicsComponent())
+        {
+            if (physics->IsGrounded() && m_jumpTimer >= m_jumpInterval)
+            {
+                physics->Jump();
+                m_jumpTimer = 0.f;
+                m_jumpInterval = 2.f + static_cast<float>(rand() % 3);
+            }
+        }
+
         if (auto* hitbox = controller->GetHitboxComponent())
         {
             const auto rect = hitbox->GetHitBox();
             const auto walls = ServiceLocator::GetCollisionManager().QueryLayer(CollisionLayer::Wall);
-
             for (const auto* wall : walls)
             {
                 const auto w = wall->GetHitBox();
@@ -49,14 +61,14 @@ namespace dae
             }
         }
 
-        if (auto* facing = controller->GetFacingComponent())  facing->SetFacing(m_direction);
-        if (auto* render = controller->GetRenderComponent())   render->SetFlipX(m_direction > 0.f);
-        if (auto* physics = controller->GetPhysicsComponent())  physics->SetHorizontalVelocity(m_direction * m_speed);
+        if (auto* facing = controller->GetFacingComponent()) facing->SetFacing(m_direction);
+        if (auto* render = controller->GetRenderComponent()) render->SetFlipX(m_direction > 0.f);
+        if (auto* physics = controller->GetPhysicsComponent()) physics->SetHorizontalVelocity(m_direction * m_speed);
 
         return nullptr;
     }
 
-    void WanderingState::OnExit(ZenChanStateController*)
+    void WanderingState::OnExit(IEnemyStateController*)
     {
     }
 }

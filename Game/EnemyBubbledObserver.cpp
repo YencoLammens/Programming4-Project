@@ -1,18 +1,14 @@
 #include "EnemyBubbledObserver.h"
 #include "HitboxComponent.h"
-#include "ZenChanStateController.h"
-#include "FoodPoolComponent.h"
-#include "BubbledState.h"
-#include "PoppedState.h"
-#include "GameObject.h"
-#include "Transform.h"
+#include "IEnemyStateController.h"
 #include "CollisionLayer.h"
 #include "EventId.h"
+#include "GameObject.h"
 
 namespace dae
 {
-    EnemyBubbledObserver::EnemyBubbledObserver(GameObject* owner, HitboxComponent* hitbox, ZenChanStateController* stateController, FoodPoolComponent* foodPool)
-        : BaseComponent(owner), m_pHitbox(hitbox), m_pStateController(stateController), m_pFoodPool(foodPool)
+    EnemyBubbledObserver::EnemyBubbledObserver(GameObject* owner, HitboxComponent* hitbox, IEnemyStateController* stateController)
+        : BaseComponent(owner), m_pHitbox(hitbox), m_pStateController(stateController)
     {
         m_pHitbox->AddObserver(this);
     }
@@ -40,10 +36,6 @@ namespace dae
         }
 
         if (ownLayer == CollisionLayer::BubbledEnemy && partnerLayer == CollisionLayer::Player)
-        {
-            const auto position = m_pHitbox->GetOwner()->GetTransform()->GetWorldPosition();
-            m_pFoodPool->Acquire(position);
             m_pStateController->OnPopped();
-        }
     }
 }

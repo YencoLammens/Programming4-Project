@@ -25,7 +25,7 @@ namespace dae
         if (event == make_sdbm_hash("PlayerDied"))
         {
             if (m_textComponent && m_healthComponent)
-                m_textComponent->SetText("# lives: " + std::to_string(m_healthComponent->GetLives()));
+                m_textComponent->SetText("LIVES: " + std::to_string(m_healthComponent->GetLives()));
         }
     }
 }

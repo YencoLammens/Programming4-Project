@@ -66,7 +66,11 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
   "Game/PlayerStateController.cpp" 
   "Game/FoodPoolComponent.cpp" 
   "Game/PickupComponent.cpp" 
-  "Game/ZenChanStateController.cpp")
+  "Game/ZenChanStateController.cpp" 
+  "Game/BoulderComponent.cpp" 
+  "Game/BoulderPoolComponent.cpp" 
+  "Game/MaitaShootComponent.cpp" 
+  "Game/MaitaStateController.cpp")
  
 # enable c++20 features
 target_compile_features(minigin PUBLIC cxx_std_20)

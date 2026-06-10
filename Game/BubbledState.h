@@ -1,17 +1,17 @@
 #pragma once
-#include "ZenChanCharacterState.h"
+#include "EnemyCharacterState.h"
 
 namespace dae
 {
-    class BubbledState final : public ZenChanCharacterState
+    class BubbledState final : public EnemyCharacterState
     {
     public:
         explicit BubbledState(float duration = 5.f);
         ~BubbledState() override = default;
 
-        void OnEnter(ZenChanStateController* controller) override;
-        std::unique_ptr<ZenChanCharacterState> Update(ZenChanStateController* controller, float deltaTime) override;
-        void OnExit(ZenChanStateController* controller) override;
+        void OnEnter(IEnemyStateController* controller) override;
+        std::unique_ptr<EnemyCharacterState> Update(IEnemyStateController* controller, float deltaTime) override;
+        void OnExit(IEnemyStateController* controller) override;
 
     private:
         float m_duration;

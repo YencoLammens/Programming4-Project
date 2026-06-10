@@ -25,7 +25,10 @@ namespace dae
         if (event == make_sdbm_hash("PointsGained"))
         {
             if (m_textComponent && m_scoreComponent)
-                m_textComponent->SetText("Score: " + std::to_string(m_scoreComponent->GetScore()));
+            {
+                const auto s = std::to_string(m_scoreComponent->GetScore());
+                m_textComponent->SetText(std::string(s.size() < 6u ? 6u - s.size() : 0u, '0') + s);
+            }
         }
     }
 }

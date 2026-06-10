@@ -22,6 +22,7 @@ namespace dae
         void Jump();
 		const float GetHorizontalVelocity() { return m_velocityX; }
         void SetHorizontalVelocity(float vx) { m_velocityX = vx; }
+        void ResetVelocity() { m_velocityX = 0.f; m_velocityY = 0.f; }
         bool IsGrounded() const { return m_isGrounded; }
         void SetEnabled(bool enabled) { m_enabled = enabled; }
         bool IsEnabled() const { return m_enabled; }

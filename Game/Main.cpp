@@ -38,6 +38,8 @@
 #include "PhysicsComponent.h"
 #include "CameraComponent.h"
 #include "FoodPoolComponent.h"
+#include "BoulderPoolComponent.h"
+#include "MaitaShootComponent.h"
 
 //Displays
 #include "HealthDisplay.h"
@@ -51,6 +53,7 @@
 #include "WanderingState.h"
 #include "IdleState.h"
 #include "PlayerStateController.h"
+#include "MaitaStateController.h"
 #include "ZenChanStateController.h"
 
 //Filesystem
@@ -84,6 +87,7 @@ static void load()
 
     auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
     auto fontSmall = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
+    auto fontArcade = dae::ResourceManager::GetInstance().LoadFont("PressStart2P.ttf", 12);
 
     //Background
     /*auto go = std::make_unique<dae::GameObject>();
@@ -134,17 +138,27 @@ static void load()
     go->AddComponent<dae::TextComponent>("Keyboard: WASD to move Bubblun, C to lose health, X to gain points, SPACE to fire bubble", fontSmall);
     scene.Add(std::move(go));*/
 
-    //Bubble object pool
+    //-----------------------------------------------------------
+    //object pools
     auto* bubbleTexture = dae::ResourceManager::GetInstance().LoadTexture("Bubble.png");
     auto bubblePoolGO = std::make_unique<dae::GameObject>();
     auto* bubblePoolPtr = bubblePoolGO->AddComponent<dae::BubblePoolComponent>(&scene, bubbleTexture);
     scene.Add(std::move(bubblePoolGO));
 
-    //food object pool
     auto* melonTexture = dae::ResourceManager::GetInstance().LoadTexture("MelonPickup.png");
     auto foodPoolGO = std::make_unique<dae::GameObject>();
     auto* melonFoodPool = foodPoolGO->AddComponent<dae::FoodPoolComponent>(&scene, melonTexture, 100);
     scene.Add(std::move(foodPoolGO));
+
+    auto* friesTexture = dae::ResourceManager::GetInstance().LoadTexture("FriesPickup.png");
+    auto friesPoolGO = std::make_unique<dae::GameObject>();
+    auto* friesFoodPool = friesPoolGO->AddComponent<dae::FoodPoolComponent>(&scene, friesTexture, 200);
+    scene.Add(std::move(friesPoolGO));
+
+    auto* boulderTexture = dae::ResourceManager::GetInstance().LoadTexture("Boulder.png");
+    auto boulderPoolGO = std::make_unique<dae::GameObject>();
+    auto* boulderPool = boulderPoolGO->AddComponent<dae::BoulderPoolComponent>(&scene, boulderTexture);
+    scene.Add(std::move(boulderPoolGO));
 
     //Player 1
     auto player1 = std::make_unique<dae::GameObject>();
@@ -182,6 +196,32 @@ static void load()
     p1ScoreDisplayGO->AddComponent<dae::TextComponent>("Score: 0", fontSmall);
     p1ScoreDisplayGO->AddComponent<dae::ScoreDisplay>(score1, score1);
     scene.Add(std::move(p1ScoreDisplayGO));*/
+    auto p1LabelGO = std::make_unique<dae::GameObject>();
+    p1LabelGO->GetTransform()->SetLocalPosition(40.f, 10.f, 0.f);
+    p1LabelGO->AddComponent<dae::TextComponent>("1UP", fontArcade);
+    scene.Add(std::move(p1LabelGO));
+
+    auto p1ScoreDisplayGO = std::make_unique<dae::GameObject>();
+    p1ScoreDisplayGO->GetTransform()->SetLocalPosition(40.f, 24.f, 0.f);
+    p1ScoreDisplayGO->AddComponent<dae::TextComponent>("000000", fontArcade);
+    p1ScoreDisplayGO->AddComponent<dae::ScoreDisplay>(score1, score1);
+    scene.Add(std::move(p1ScoreDisplayGO));
+
+    auto p1HealthDisplayGO = std::make_unique<dae::GameObject>();
+    p1HealthDisplayGO->GetTransform()->SetLocalPosition(40.f, 38.f, 0.f);
+    p1HealthDisplayGO->AddComponent<dae::TextComponent>("LIVES: 3", fontArcade);
+    p1HealthDisplayGO->AddComponent<dae::HealthDisplay>(health1, health1);
+    scene.Add(std::move(p1HealthDisplayGO));
+
+    auto hiScoreLabelGO = std::make_unique<dae::GameObject>();
+    hiScoreLabelGO->GetTransform()->SetLocalPosition(340.f, 30.f, 0.f);
+    hiScoreLabelGO->AddComponent<dae::TextComponent>("HI-SCORE", fontArcade);
+    scene.Add(std::move(hiScoreLabelGO));
+
+    auto hiScoreGO = std::make_unique<dae::GameObject>();
+    hiScoreGO->GetTransform()->SetLocalPosition(340.f, 50.f, 0.f);
+    hiScoreGO->AddComponent<dae::TextComponent>("000000", fontArcade);
+    scene.Add(std::move(hiScoreGO));
 
     //Player 2
     /*auto player2 = std::make_unique<dae::GameObject>();
@@ -211,7 +251,7 @@ static void load()
     player2ScoreDisplayGO->AddComponent<dae::ScoreDisplay>(score2, score2);
     scene.Add(std::move(player2ScoreDisplayGO));*/
 
-    //Enemy
+    //Zennu channu
     auto enemy = std::make_unique<dae::GameObject>();
     auto* enemyRender = enemy->AddComponent<dae::RenderComponent>();
     enemyRender->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("ZenchanWalking.png"));
@@ -225,9 +265,28 @@ static void load()
     enemyAnim->AddClip(dae::make_sdbm_hash("bubbled"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("ZenchanBubbled.png"),  1, 16, 16, 0.2f });
     enemyAnim->AddClip(dae::make_sdbm_hash("popped"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("ZenchanPopped.png"),   4, 16, 16, 0.1f });
     enemyAnim->Play(dae::make_sdbm_hash("walk"));
-    auto* enemyState = enemy->AddComponent<dae::ZenChanStateController>(std::make_unique<dae::WanderingState>());
-    enemy->AddComponent<dae::EnemyBubbledObserver>(enemyHitbox, enemyState, melonFoodPool);
+    auto* enemyState = enemy->AddComponent<dae::ZenChanStateController>(std::make_unique<dae::WanderingState>(), melonFoodPool);
+    enemy->AddComponent<dae::EnemyBubbledObserver>(enemyHitbox, enemyState);
     scene.Add(std::move(enemy));
+
+    //Maita master of rock bender of none
+    auto maita = std::make_unique<dae::GameObject>();
+    auto* maitaRender = maita->AddComponent<dae::RenderComponent>();
+    maitaRender->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("MaitaWalking.png"));
+    maita->GetTransform()->SetLocalPosition(200.f, 50.f, 0.f);
+    auto* maitaHitbox = maita->AddComponent<dae::HitboxComponent>(14.f, 14.f);
+    maitaHitbox->SetLayer(dae::CollisionLayer::Enemy);
+    maita->AddComponent<dae::PhysicsComponent>();
+    auto* maitaFacing = maita->AddComponent<dae::FacingComponent>();
+    auto* maitaAnim = maita->AddComponent<dae::AnimationComponent>(maitaRender);
+    maitaAnim->AddClip(dae::make_sdbm_hash("walk"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("MaitaWalking.png"), 2, 16, 16, 0.15f });
+    maitaAnim->AddClip(dae::make_sdbm_hash("bubbled"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("MaitaBubbled.png"), 1, 16, 16, 0.2f });
+    maitaAnim->AddClip(dae::make_sdbm_hash("popped"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("MaitaPopped.png"), 4, 16, 16, 0.1f });
+    maitaAnim->Play(dae::make_sdbm_hash("walk"));
+    auto* maitaShoot = maita->AddComponent<dae::MaitaShootComponent>(boulderPool, maitaFacing);
+    auto* maitaState = maita->AddComponent<dae::MaitaStateController>(std::make_unique<dae::WanderingState>(100.f), friesFoodPool, maitaShoot);
+    maita->AddComponent<dae::EnemyBubbledObserver>(maitaHitbox, maitaState);
+    scene.Add(std::move(maita));
 
 
     //-----------------------------------------------------------

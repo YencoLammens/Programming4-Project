@@ -12,16 +12,17 @@ namespace dae
     class RenderComponent;
     class AnimationComponent;
     class FoodPoolComponent;
+    class MaitaShootComponent;
 
-    class ZenChanStateController final : public BaseComponent, public IEnemyStateController
+    class MaitaStateController final : public BaseComponent, public IEnemyStateController
     {
     public:
-        ZenChanStateController(GameObject* owner, std::unique_ptr<EnemyCharacterState> initialState, FoodPoolComponent* foodPool);
-        ~ZenChanStateController() override = default;
-        ZenChanStateController(const ZenChanStateController&) = delete;
-        ZenChanStateController& operator=(const ZenChanStateController&) = delete;
-        ZenChanStateController(ZenChanStateController&&) = delete;
-        ZenChanStateController& operator=(ZenChanStateController&&) = delete;
+        MaitaStateController(GameObject* owner, std::unique_ptr<EnemyCharacterState> initialState, FoodPoolComponent* foodPool, MaitaShootComponent* shoot);
+        ~MaitaStateController() override = default;
+        MaitaStateController(const MaitaStateController&) = delete;
+        MaitaStateController& operator=(const MaitaStateController&) = delete;
+        MaitaStateController(MaitaStateController&&) = delete;
+        MaitaStateController& operator=(MaitaStateController&&) = delete;
 
         void Update(float deltaTime) override;
         void FixedUpdate(float) override {}
@@ -34,13 +35,14 @@ namespace dae
         FacingComponent* GetFacingComponent() const override { return m_facing; }
         RenderComponent* GetRenderComponent() const override { return m_render; }
         AnimationComponent* GetAnimationComponent() const override { return m_animation; }
-        GameObject* GetOwner() const override { return BaseComponent::GetOwner(); }
+		GameObject* GetOwner() const override { return BaseComponent::GetOwner(); } // This is needed to know which GetOwner() we're calling, since both BaseComponent and IEnemyStateController have a GetOwner()
 
         void SetState(std::unique_ptr<EnemyCharacterState> newState);
 
     private:
         std::unique_ptr<EnemyCharacterState> m_currentState;
         FoodPoolComponent* m_pFoodPool{ nullptr };
+        MaitaShootComponent* m_pShoot{ nullptr };
         HitboxComponent* m_hitbox{ nullptr };
         PhysicsComponent* m_physics{ nullptr };
         FacingComponent* m_facing{ nullptr };

@@ -4,14 +4,15 @@
 #include "FacingComponent.h"
 #include "RenderComponent.h"
 #include "AnimationComponent.h"
+#include "FoodPoolComponent.h"
 #include "BubbledState.h"
 #include "PoppedState.h"
 #include "GameObject.h"
 
 namespace dae
 {
-    ZenChanStateController::ZenChanStateController(GameObject* owner, std::unique_ptr<ZenChanCharacterState> initialState)
-        : BaseComponent(owner), m_currentState(std::move(initialState)), m_hitbox(owner->GetComponent<HitboxComponent>()), m_physics(owner->GetComponent<PhysicsComponent>()), m_facing(owner->GetComponent<FacingComponent>()), m_render(owner->GetComponent<RenderComponent>()), m_animation(owner->GetComponent<AnimationComponent>())
+    ZenChanStateController::ZenChanStateController(GameObject* owner, std::unique_ptr<EnemyCharacterState> initialState, FoodPoolComponent* foodPool)
+        : BaseComponent(owner), m_currentState(std::move(initialState)), m_pFoodPool(foodPool), m_hitbox(owner->GetComponent<HitboxComponent>()), m_physics(owner->GetComponent<PhysicsComponent>()), m_facing(owner->GetComponent<FacingComponent>()), m_render(owner->GetComponent<RenderComponent>()), m_animation(owner->GetComponent<AnimationComponent>())
     {
         if (m_currentState)
             m_currentState->OnEnter(this);
@@ -32,10 +33,10 @@ namespace dae
 
     void ZenChanStateController::OnPopped()
     {
-        SetState(std::make_unique<PoppedState>());
+        SetState(std::make_unique<PoppedState>(m_pFoodPool));
     }
 
-    void ZenChanStateController::SetState(std::unique_ptr<ZenChanCharacterState> newState)
+    void ZenChanStateController::SetState(std::unique_ptr<EnemyCharacterState> newState)
     {
         if (m_currentState)
             m_currentState->OnExit(this);
