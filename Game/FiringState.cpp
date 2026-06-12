@@ -30,7 +30,7 @@ namespace dae
             const float direction = facing->GetFacing();
             if (pool->Acquire(controller->GetOwner()->GetTransform()->GetWorldPosition(), direction))
             {
-                ServiceLocator::GetSoundSystem().Play(1, 1.f);
+                ServiceLocator::GetSoundSystem().Play(0, 0.5f);
             }  
         }
     }

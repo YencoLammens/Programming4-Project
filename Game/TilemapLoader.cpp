@@ -14,8 +14,12 @@
 
 namespace dae
 {
-    void TilemapLoader::Load(Scene& scene, const std::string& filePath)
+    std::vector<EnemySpawnData> TilemapLoader::Load(Scene& scene, const std::string& filePath)
     {
+        for (auto* tile : s_loadedTiles)
+            tile->MarkForDeletion();
+        s_loadedTiles.clear();
+
         std::ifstream file(filePath);
         if (!file.is_open())
             throw std::runtime_error("TilemapLoader: could not open " + filePath);
@@ -27,8 +31,8 @@ namespace dae
         const int tileHeight = mapData["tileheight"];
 
         const auto& tilesetData = mapData["tilesets"][0];
-        const int   firstGid = tilesetData["firstgid"];
-        const int   columns = tilesetData["columns"];
+        const int firstGid = tilesetData["firstgid"];
+        const int columns = tilesetData["columns"];
         const std::string rawImagePath = tilesetData["image"];
         const std::string textureName = std::filesystem::path(rawImagePath).filename().string();
 
@@ -40,9 +44,9 @@ namespace dae
 
             CollisionLayer tileLayer = CollisionLayer::None;
             if (layer["name"] == "Platforms") tileLayer = CollisionLayer::Platform;
-            else if (layer["name"] == "Walls")     tileLayer = CollisionLayer::Wall;
-            const auto& data = layer["data"];
+            else if (layer["name"] == "Walls") tileLayer = CollisionLayer::Wall;
 
+            const auto& data = layer["data"];
             for (int i = 0; i < static_cast<int>(data.size()); ++i)
             {
                 const int tileId = data[i];
@@ -78,8 +82,22 @@ namespace dae
                     hb->SetLayer(tileLayer);
                 }
 
+                s_loadedTiles.push_back(go.get());
                 scene.Add(std::move(go));
             }
         }
+
+        std::vector<EnemySpawnData> spawns;
+        for (const auto& layer : mapData["layers"])
+        {
+            if (layer["type"] != "objectgroup") continue;
+            const auto layerClass = layer.value("class", std::string{});
+            if (layerClass.empty()) continue;
+            for (const auto& obj : layer["objects"])
+            {
+                spawns.push_back({ obj["x"].get<float>(), obj["y"].get<float>(), layerClass});
+            }
+        }
+        return spawns;
     }
 }

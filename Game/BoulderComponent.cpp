@@ -9,6 +9,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "AnimationComponent.h"
+#include "ServiceLocator.h"
 
 namespace dae
 {
@@ -82,7 +83,11 @@ namespace dae
 
         auto* partner = m_hitbox->GetOverlapPartner();
         if (partner && partner->GetLayer() == CollisionLayer::Player)
+        {
             m_pendingRelease = true;
+			ServiceLocator::GetSoundSystem().Play(7, 1.f);
+        }
+            
     }
 
     void BoulderComponent::Reset(glm::vec3 position, float direction)

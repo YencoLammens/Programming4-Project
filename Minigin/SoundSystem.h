@@ -9,12 +9,14 @@ namespace dae
     {
     public:
         virtual ~SoundSystem() = default;
-        virtual void Play(sound_id id, float volume) = 0;
-        virtual void AddSound(sound_id id, const std::string& filePath) = 0;
         SoundSystem(const SoundSystem&) = delete;
         SoundSystem& operator=(const SoundSystem&) = delete;
         SoundSystem(SoundSystem&&) = delete;
         SoundSystem& operator=(SoundSystem&&) = delete;
+
+        virtual void Play(sound_id id, float volume) = 0;
+        virtual void AddSound(sound_id id, const std::string& filePath) = 0;
+        virtual void ToggleMute() {};
     protected:
         SoundSystem() = default;
     };

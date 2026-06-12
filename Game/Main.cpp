@@ -24,6 +24,7 @@
 #include "MoveCommand.h"
 #include "ShootBubbleCommand.h"
 #include "JumpCommand.h"
+#include "StopSoundCommand.h"
 
 //Components
 #include "TextComponent.h"
@@ -37,6 +38,7 @@
 #include "AnimationComponent.h"
 #include "PhysicsComponent.h"
 #include "CameraComponent.h"
+#include "LevelManagerComponent.h"
 #include "FoodPoolComponent.h"
 #include "BoulderPoolComponent.h"
 #include "MaitaShootComponent.h"
@@ -55,12 +57,54 @@
 #include "PlayerStateController.h"
 #include "MaitaStateController.h"
 #include "ZenChanStateController.h"
+#include "GameState.h"
 
 //Filesystem
 #include <filesystem>
 namespace fs = std::filesystem;
 
 
+static void SpawnEnemiesFromData(const std::vector<dae::EnemySpawnData>& spawns, dae::Scene& scene, dae::LevelManagerComponent* mgr, dae::FoodPoolComponent* melonFood, dae::FoodPoolComponent* friesFood, dae::BoulderPoolComponent* boulderPool)
+{
+    for (const auto& spawn : spawns)
+    {
+        auto enemy = std::make_unique<dae::GameObject>();
+        auto* enemyRender = enemy->AddComponent<dae::RenderComponent>();
+        enemy->GetTransform()->SetLocalPosition(spawn.x, spawn.y, 0.f);
+        auto* enemyHitbox = enemy->AddComponent<dae::HitboxComponent>(14.f, 14.f);
+        enemyHitbox->SetLayer(dae::CollisionLayer::Enemy);
+        enemy->AddComponent<dae::PhysicsComponent>();
+        enemy->AddComponent<dae::FacingComponent>();
+        auto* enemyAnim = enemy->AddComponent<dae::AnimationComponent>(enemyRender);
+
+        if (spawn.type == "ZenChan")
+        {
+            enemyRender->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("ZenchanWalking.png"));
+            enemyAnim->AddClip(dae::make_sdbm_hash("walk"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("ZenchanWalking.png"), 2, 16, 16, 0.15f });
+            enemyAnim->AddClip(dae::make_sdbm_hash("bubbled"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("ZenchanBubbled.png"),  1, 16, 16, 0.2f });
+            enemyAnim->AddClip(dae::make_sdbm_hash("popped"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("ZenchanPopped.png"),   4, 16, 16, 0.1f });
+            enemyAnim->Play(dae::make_sdbm_hash("walk"));
+            auto* enemyState = enemy->AddComponent<dae::ZenChanStateController>(std::make_unique<dae::WanderingState>(), melonFood);
+            enemy->AddComponent<dae::EnemyBubbledObserver>(enemyHitbox, enemyState);
+        }
+        else if (spawn.type == "Maita")
+        {
+            enemyRender->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("MaitaWalking.png"));
+            enemyAnim->AddClip(dae::make_sdbm_hash("walk"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("MaitaWalking.png"),  2, 16, 16, 0.15f });
+            enemyAnim->AddClip(dae::make_sdbm_hash("bubbled"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("MaitaBubbled.png"),   1, 16, 16, 0.2f });
+            enemyAnim->AddClip(dae::make_sdbm_hash("popped"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("MaitaPopped.png"),    4, 16, 16, 0.1f });
+            enemyAnim->Play(dae::make_sdbm_hash("walk"));
+            auto* facing = enemy->GetComponent<dae::FacingComponent>();
+            auto* shoot = enemy->AddComponent<dae::MaitaShootComponent>(boulderPool, facing);
+            auto* enemyState = enemy->AddComponent<dae::MaitaStateController>(std::make_unique<dae::WanderingState>(), friesFood, shoot);
+            enemy->AddComponent<dae::EnemyBubbledObserver>(enemyHitbox, enemyState);
+        }
+        else continue;
+
+        mgr->RegisterEnemy(enemy.get());
+        scene.Add(std::move(enemy));
+    }
+}
 static void load()
 {
     //Service locator + sound system setup
@@ -72,10 +116,16 @@ static void load()
 #endif
 
     //dae::ServiceLocator::GetSoundSystem().AddSound(0, "Data/Sounds/TestSong.mp3");
-    dae::ServiceLocator::GetSoundSystem().AddSound(0, "Data/Sounds/BubbleBobbleTheme.mp3");
+    dae::ServiceLocator::GetSoundSystem().AddSound(0, "Data/Sounds/BubbleShoot.mp3");
 	dae::ServiceLocator::GetSoundSystem().AddSound(1, "Data/Sounds/BubblePop.mp3");
     dae::ServiceLocator::GetSoundSystem().AddSound(2, "Data/Sounds/Score.mp3");
-    dae::ServiceLocator::GetSoundSystem().AddSound(3, "Data/Sounds/Death.mp3");
+    dae::ServiceLocator::GetSoundSystem().AddSound(4, "Data/Sounds/PlayerDeath.mp3");
+    dae::ServiceLocator::GetSoundSystem().AddSound(5, "Data/Sounds/PlayerHit.mp3");
+    dae::ServiceLocator::GetSoundSystem().AddSound(6, "Data/Sounds/Jump.mp3");
+    dae::ServiceLocator::GetSoundSystem().AddSound(7, "Data/Sounds/BoulderHit.mp3");
+    dae::ServiceLocator::GetSoundSystem().AddSound(8, "Data/Sounds/EnemyHit.mp3");
+	dae::ServiceLocator::GetSoundSystem().AddSound(9, "Data/Sounds/PickupDrop.mp3");
+
     // dae::ServiceLocator::GetSoundSystem().Play(0, 1.f);
 
     //Collision manager set up
@@ -96,7 +146,7 @@ static void load()
     scene.Add(std::move(go));*/
 
     //Level layout
-    dae::TilemapLoader::Load(scene, "Data/Levels/level2.json");
+    auto initialSpawns = dae::TilemapLoader::Load(scene, "Data/Levels/level" + std::to_string(dae::GameState::currentLevel) + ".json");
 
     //Camera
     const float levelW = 512.f;
@@ -186,42 +236,31 @@ static void load()
     scene.Add(std::move(player1));
 
     //Player 1 displays
-    /*auto p1HealthDisplayGO = std::make_unique<dae::GameObject>();
-    p1HealthDisplayGO->GetTransform()->SetLocalPosition(10, 140, 0);
-    p1HealthDisplayGO->AddComponent<dae::TextComponent>("# lives: 3", fontSmall);
-    p1HealthDisplayGO->AddComponent<dae::HealthDisplay>(health1, health1);
-    scene.Add(std::move(p1HealthDisplayGO));
-
-    auto p1ScoreDisplayGO = std::make_unique<dae::GameObject>();
-    p1ScoreDisplayGO->GetTransform()->SetLocalPosition(10, 160, 0);
-    p1ScoreDisplayGO->AddComponent<dae::TextComponent>("Score: 0", fontSmall);
-    p1ScoreDisplayGO->AddComponent<dae::ScoreDisplay>(score1, score1);
-    scene.Add(std::move(p1ScoreDisplayGO));*/
     auto p1LabelGO = std::make_unique<dae::GameObject>();
-    p1LabelGO->GetTransform()->SetLocalPosition(40.f, 10.f, 0.f);
+    p1LabelGO->GetTransform()->SetLocalPosition(40.f, 20.f, 0.f);
     p1LabelGO->AddComponent<dae::TextComponent>("1UP", fontArcade);
     scene.Add(std::move(p1LabelGO));
 
     auto p1ScoreDisplayGO = std::make_unique<dae::GameObject>();
-    p1ScoreDisplayGO->GetTransform()->SetLocalPosition(40.f, 24.f, 0.f);
+    p1ScoreDisplayGO->GetTransform()->SetLocalPosition(40.f, 40.f, 0.f);
     p1ScoreDisplayGO->AddComponent<dae::TextComponent>("000000", fontArcade);
     p1ScoreDisplayGO->AddComponent<dae::ScoreDisplay>(score1, score1);
     scene.Add(std::move(p1ScoreDisplayGO));
 
     auto p1HealthDisplayGO = std::make_unique<dae::GameObject>();
-    p1HealthDisplayGO->GetTransform()->SetLocalPosition(40.f, 38.f, 0.f);
+    p1HealthDisplayGO->GetTransform()->SetLocalPosition(40.f, 60.f, 0.f);
     p1HealthDisplayGO->AddComponent<dae::TextComponent>("LIVES: 3", fontArcade);
     p1HealthDisplayGO->AddComponent<dae::HealthDisplay>(health1, health1);
     scene.Add(std::move(p1HealthDisplayGO));
 
     auto hiScoreLabelGO = std::make_unique<dae::GameObject>();
-    hiScoreLabelGO->GetTransform()->SetLocalPosition(340.f, 30.f, 0.f);
+    hiScoreLabelGO->GetTransform()->SetLocalPosition(340.f, 20.f, 0.f);
     hiScoreLabelGO->AddComponent<dae::TextComponent>("HI-SCORE", fontArcade);
     scene.Add(std::move(hiScoreLabelGO));
 
     auto hiScoreGO = std::make_unique<dae::GameObject>();
-    hiScoreGO->GetTransform()->SetLocalPosition(340.f, 50.f, 0.f);
-    hiScoreGO->AddComponent<dae::TextComponent>("000000", fontArcade);
+    hiScoreGO->GetTransform()->SetLocalPosition(340.f, 40.f, 0.f);
+    auto* hiScoreText = hiScoreGO->AddComponent<dae::TextComponent>("000000", fontArcade);
     scene.Add(std::move(hiScoreGO));
 
     //Player 2
@@ -252,42 +291,69 @@ static void load()
     player2ScoreDisplayGO->AddComponent<dae::ScoreDisplay>(score2, score2);
     scene.Add(std::move(player2ScoreDisplayGO));*/
 
-    //Zennu channu
-    auto enemy = std::make_unique<dae::GameObject>();
-    auto* enemyRender = enemy->AddComponent<dae::RenderComponent>();
-    enemyRender->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("ZenchanWalking.png"));
-    enemy->GetTransform()->SetLocalPosition(100.f, 50.f, 0.f);
-    auto* enemyHitbox = enemy->AddComponent<dae::HitboxComponent>(14.f, 14.f);
-    enemyHitbox->SetLayer(dae::CollisionLayer::Enemy);
-    enemy->AddComponent<dae::PhysicsComponent>();
-    enemy->AddComponent<dae::FacingComponent>();
-    auto* enemyAnim = enemy->AddComponent<dae::AnimationComponent>(enemyRender);
-    enemyAnim->AddClip(dae::make_sdbm_hash("walk"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("ZenchanWalking.png"), 2, 16, 16, 0.15f });
-    enemyAnim->AddClip(dae::make_sdbm_hash("bubbled"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("ZenchanBubbled.png"),  1, 16, 16, 0.2f });
-    enemyAnim->AddClip(dae::make_sdbm_hash("popped"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("ZenchanPopped.png"),   4, 16, 16, 0.1f });
-    enemyAnim->Play(dae::make_sdbm_hash("walk"));
-    auto* enemyState = enemy->AddComponent<dae::ZenChanStateController>(std::make_unique<dae::WanderingState>(), melonFoodPool);
-    enemy->AddComponent<dae::EnemyBubbledObserver>(enemyHitbox, enemyState);
-    scene.Add(std::move(enemy));
 
-    //Maita master of rock bender of none
-    auto maita = std::make_unique<dae::GameObject>();
-    auto* maitaRender = maita->AddComponent<dae::RenderComponent>();
-    maitaRender->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("MaitaWalking.png"));
-    maita->GetTransform()->SetLocalPosition(200.f, 50.f, 0.f);
-    auto* maitaHitbox = maita->AddComponent<dae::HitboxComponent>(14.f, 14.f);
-    maitaHitbox->SetLayer(dae::CollisionLayer::Enemy);
-    maita->AddComponent<dae::PhysicsComponent>();
-    auto* maitaFacing = maita->AddComponent<dae::FacingComponent>();
-    auto* maitaAnim = maita->AddComponent<dae::AnimationComponent>(maitaRender);
-    maitaAnim->AddClip(dae::make_sdbm_hash("walk"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("MaitaWalking.png"), 2, 16, 16, 0.15f });
-    maitaAnim->AddClip(dae::make_sdbm_hash("bubbled"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("MaitaBubbled.png"), 1, 16, 16, 0.2f });
-    maitaAnim->AddClip(dae::make_sdbm_hash("popped"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("MaitaPopped.png"), 4, 16, 16, 0.1f });
-    maitaAnim->Play(dae::make_sdbm_hash("walk"));
-    auto* maitaShoot = maita->AddComponent<dae::MaitaShootComponent>(boulderPool, maitaFacing);
-    auto* maitaState = maita->AddComponent<dae::MaitaStateController>(std::make_unique<dae::WanderingState>(100.f), friesFoodPool, maitaShoot);
-    maita->AddComponent<dae::EnemyBubbledObserver>(maitaHitbox, maitaState);
-    scene.Add(std::move(maita));
+    auto levelMgrGO = std::make_unique<dae::GameObject>();
+    auto* levelMgr = levelMgrGO->AddComponent<dae::LevelManagerComponent>();
+    
+
+    SpawnEnemiesFromData(initialSpawns, scene, levelMgr, melonFoodPool, friesFoodPool, boulderPool);
+
+    auto* scenePtr = &scene;
+    levelMgr->SetOnLevelComplete([scenePtr, p1, score1, levelMgr, melonFoodPool, friesFoodPool, boulderPool, hiScoreText]()
+        {
+            dae::GameState::currentLevel = dae::GameState::currentLevel < 3 ? dae::GameState::currentLevel + 1 : 1;
+
+            const int s = score1->GetScore();
+            if (s > dae::GameState::hiScore)
+            {
+                dae::GameState::hiScore = s;
+                const auto str = std::to_string(s);
+                hiScoreText->SetText(std::string(str.size() < 6u ? 6u - str.size() : 0u, '0') + str);
+            }
+
+            p1->GetTransform()->SetLocalPosition(300.f, 300.f, 0.f);
+
+            const auto nextSpawns = dae::TilemapLoader::Load(*scenePtr, "Data/Levels/level" + std::to_string(dae::GameState::currentLevel) + ".json");
+
+            SpawnEnemiesFromData(nextSpawns, *scenePtr, levelMgr, melonFoodPool, friesFoodPool, boulderPool);
+        });
+    scene.Add(std::move(levelMgrGO));
+    //Zennu channu
+    //auto enemy = std::make_unique<dae::GameObject>();
+    //auto* enemyRender = enemy->AddComponent<dae::RenderComponent>();
+    //enemyRender->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("ZenchanWalking.png"));
+    //enemy->GetTransform()->SetLocalPosition(100.f, 50.f, 0.f);
+    //auto* enemyHitbox = enemy->AddComponent<dae::HitboxComponent>(14.f, 14.f);
+    //enemyHitbox->SetLayer(dae::CollisionLayer::Enemy);
+    //enemy->AddComponent<dae::PhysicsComponent>();
+    //enemy->AddComponent<dae::FacingComponent>();
+    //auto* enemyAnim = enemy->AddComponent<dae::AnimationComponent>(enemyRender);
+    //enemyAnim->AddClip(dae::make_sdbm_hash("walk"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("ZenchanWalking.png"), 2, 16, 16, 0.15f });
+    //enemyAnim->AddClip(dae::make_sdbm_hash("bubbled"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("ZenchanBubbled.png"),  1, 16, 16, 0.2f });
+    //enemyAnim->AddClip(dae::make_sdbm_hash("popped"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("ZenchanPopped.png"),   4, 16, 16, 0.1f });
+    //enemyAnim->Play(dae::make_sdbm_hash("walk"));
+    //auto* enemyState = enemy->AddComponent<dae::ZenChanStateController>(std::make_unique<dae::WanderingState>(), melonFoodPool);
+    //enemy->AddComponent<dae::EnemyBubbledObserver>(enemyHitbox, enemyState);
+    //scene.Add(std::move(enemy));
+
+    ////Maita master of rock bender of none
+    //auto maita = std::make_unique<dae::GameObject>();
+    //auto* maitaRender = maita->AddComponent<dae::RenderComponent>();
+    //maitaRender->SetTexture(dae::ResourceManager::GetInstance().LoadTexture("MaitaWalking.png"));
+    //maita->GetTransform()->SetLocalPosition(200.f, 50.f, 0.f);
+    //auto* maitaHitbox = maita->AddComponent<dae::HitboxComponent>(14.f, 14.f);
+    //maitaHitbox->SetLayer(dae::CollisionLayer::Enemy);
+    //maita->AddComponent<dae::PhysicsComponent>();
+    //auto* maitaFacing = maita->AddComponent<dae::FacingComponent>();
+    //auto* maitaAnim = maita->AddComponent<dae::AnimationComponent>(maitaRender);
+    //maitaAnim->AddClip(dae::make_sdbm_hash("walk"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("MaitaWalking.png"), 2, 16, 16, 0.15f });
+    //maitaAnim->AddClip(dae::make_sdbm_hash("bubbled"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("MaitaBubbled.png"), 1, 16, 16, 0.2f });
+    //maitaAnim->AddClip(dae::make_sdbm_hash("popped"), dae::AnimationClip{ dae::ResourceManager::GetInstance().LoadTexture("MaitaPopped.png"), 4, 16, 16, 0.1f });
+    //maitaAnim->Play(dae::make_sdbm_hash("walk"));
+    //auto* maitaShoot = maita->AddComponent<dae::MaitaShootComponent>(boulderPool, maitaFacing);
+    //auto* maitaState = maita->AddComponent<dae::MaitaStateController>(std::make_unique<dae::WanderingState>(100.f), friesFoodPool, maitaShoot);
+    //maita->AddComponent<dae::EnemyBubbledObserver>(maitaHitbox, maitaState);
+    //scene.Add(std::move(maita));
 
 
     //-----------------------------------------------------------
@@ -301,6 +367,7 @@ static void load()
     input.BindCommand(SDL_SCANCODE_D, dae::KeyState::Pressed, std::make_unique<dae::MoveCommand>(p1, glm::vec3{ 1, 0, 0 }, 100.f, p1State));
     //Misc
     input.BindCommand(SDL_SCANCODE_SPACE, dae::KeyState::Down, std::make_unique<dae::ShootBubbleCommand>(p1, p1State));
+	input.BindCommand(SDL_SCANCODE_F2, dae::KeyState::Down, std::make_unique<dae::StopSoundCommand>());
 
     //Controller inputs
     //Movement

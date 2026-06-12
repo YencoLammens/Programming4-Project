@@ -4,6 +4,7 @@
 #include "CollisionLayer.h"
 #include "EventId.h"
 #include "GameObject.h"
+#include "ServiceLocator.h"
 
 namespace dae
 {
@@ -32,10 +33,16 @@ namespace dae
         if (ownLayer == CollisionLayer::Enemy && partnerLayer == CollisionLayer::Bubble)
         {
             m_pStateController->OnBubbled();
+            ServiceLocator::GetSoundSystem().Play(8, 0.5f);
             return;
         }
 
         if (ownLayer == CollisionLayer::BubbledEnemy && partnerLayer == CollisionLayer::Player)
+        {
             m_pStateController->OnPopped();
+            ServiceLocator::GetSoundSystem().Play(1, 0.5f);
+			return;
+        }
+            
     }
 }

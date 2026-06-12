@@ -35,6 +35,7 @@ namespace dae
         static constexpr float k_gravity = 350.f;
         static constexpr float k_jumpSpeed = 250.f;
         static constexpr float k_maxFallSpeed = 200.f;
+        static constexpr float k_mapHeight = 400.f;
 
         float m_velocityX{ 0.f };
         float m_velocityY{ 0.f };

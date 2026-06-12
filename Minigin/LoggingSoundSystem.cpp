@@ -36,4 +36,15 @@ namespace dae
         std::cout << "added sound " << id << " from path " << filePath << "\n";
 #endif
     }
+    void LoggingSoundSystem::ToggleMute()
+    {
+        m_pRealSoundSystem->ToggleMute();
+#ifdef _WIN32
+        std::stringstream ss;
+        ss << "toggled mute\n";
+        OutputDebugStringA(ss.str().c_str());
+#else
+        std::cout << "toggled mute\n";
+#endif
+    }
 }

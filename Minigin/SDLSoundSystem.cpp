@@ -72,6 +72,15 @@ namespace dae
             m_audioclips[id] = AudioClip{ filePath, nullptr, false };
         }
 
+        void ToggleMute()
+        {
+            m_isMuted = !m_isMuted;
+            if (m_mixer)
+            {
+                MIX_SetMixerGain(m_mixer, m_isMuted ? 0.0f : 1.0f);
+            }
+        }
+
     private:
         void ProcessQueue(std::stop_token st)
         {
@@ -98,7 +107,8 @@ namespace dae
                 }
                 if (clip.pAudio && m_mixer)
                 {
-                    MIX_SetMixerGain(m_mixer, request.volume);
+                    float finalVolume = m_isMuted ? 0.0f : request.volume;
+                    MIX_SetMixerGain(m_mixer, finalVolume);
                     if (!MIX_PlayAudio(m_mixer, clip.pAudio))
                         SDL_Log("MIX_PlayAudio failed: %s", SDL_GetError());
                 }
@@ -112,6 +122,7 @@ namespace dae
         std::unordered_map<sound_id, AudioClip> m_audioclips;
         MIX_Mixer* m_mixer{ nullptr };
         std::jthread m_thread;
+        std::atomic<bool> m_isMuted{ false };
     };
 
     SDLSoundSystem::SDLSoundSystem()
@@ -129,5 +140,9 @@ namespace dae
     void SDLSoundSystem::AddSound(sound_id id, const std::string& filePath)
     {
         m_pImpl->AddSound(id, filePath);
+    }
+    void SDLSoundSystem::ToggleMute()
+    {
+        m_pImpl->ToggleMute();
     }
 }

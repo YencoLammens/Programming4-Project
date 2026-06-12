@@ -8,6 +8,7 @@
 #include "Transform.h"
 #include "EventId.h"
 #include "GameObject.h"
+#include "ServiceLocator.h"
 #include <cstdlib>
 
 namespace dae
@@ -63,7 +64,11 @@ namespace dae
         if (physics && physics->IsGrounded() && !controller->GetOwner()->IsMarkedForDeletion())
         {
             if (m_pFoodPool)
+            {
                 m_pFoodPool->Acquire(controller->GetOwner()->GetTransform()->GetWorldPosition());
+                dae::ServiceLocator::GetSoundSystem().Play(9, 0.2f);
+            }
+
             controller->GetOwner()->MarkForDeletion();
         }
 

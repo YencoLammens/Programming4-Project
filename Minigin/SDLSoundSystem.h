@@ -15,6 +15,8 @@ namespace dae
         SDLSoundSystem& operator=(SDLSoundSystem&&) = delete;
         void Play(sound_id id, float volume) override;
         void AddSound(sound_id id, const std::string& filePath) override;
+
+        void ToggleMute() override;
     private:
         class SDLSoundSystemImpl;
         std::unique_ptr<SDLSoundSystemImpl> m_pImpl;

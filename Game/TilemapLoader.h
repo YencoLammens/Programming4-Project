@@ -1,14 +1,26 @@
 #pragma once
 #include <string>
+#include <vector>
 
 namespace dae
 {
     class Scene;
+    class GameObject;
+
+    struct EnemySpawnData
+    {
+        float x;
+        float y;
+        std::string type;
+    };
 
     class TilemapLoader final
     {
     public:
         TilemapLoader() = delete;
-        static void Load(Scene& scene, const std::string& filePath);
+        static std::vector<EnemySpawnData> Load(Scene& scene, const std::string& filePath);
+
+    private:
+        static inline std::vector<GameObject*> s_loadedTiles;
     };
 }

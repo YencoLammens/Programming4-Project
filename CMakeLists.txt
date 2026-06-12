@@ -71,7 +71,7 @@ add_executable(${GAME_NAME} ${TARGET_PARAM}
   "Game/MaitaStateController.cpp" 
   "Game/RespawnState.cpp"
   "Game/PhysicsComponent.cpp"
-  "Game/AnimationComponent.cpp")
+  "Game/AnimationComponent.cpp" "Game/LevelManagerComponent.cpp" "Game/StopSoundCommand.cpp")
  
 # enable c++20 features
 target_compile_features(minigin PUBLIC cxx_std_20)

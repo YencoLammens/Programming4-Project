@@ -45,6 +45,12 @@ namespace dae
         ResolvePlatforms(prevBottom, transform);
         ResolveBubbles(transform);
         ResolveWalls(transform);
+        pos = transform->GetLocalPosition();
+        if (pos.y + m_hitbox->GetHeight() > k_mapHeight) //wrap around
+        {
+            pos.y = 0.f;
+            transform->SetLocalPosition(pos);
+        }
     }
 
     void PhysicsComponent::Jump()

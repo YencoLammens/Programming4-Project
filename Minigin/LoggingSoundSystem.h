@@ -15,6 +15,7 @@ namespace dae
         LoggingSoundSystem& operator=(LoggingSoundSystem&&) = delete;
         void Play(sound_id id, float volume) override;
         void AddSound(sound_id id, const std::string& filePath) override;
+        void ToggleMute() override;
     private:
         std::unique_ptr<SoundSystem> m_pRealSoundSystem;
     };

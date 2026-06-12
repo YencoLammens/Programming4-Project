@@ -2,6 +2,7 @@
 #include "HitboxComponent.h"
 #include "PlayerStateController.h"
 #include "CollisionLayer.h"
+#include "ServiceLocator.h"
 
 namespace dae
 {
@@ -25,7 +26,10 @@ namespace dae
                 return;
             auto* partner = m_pHitbox->GetOverlapPartner();
             if (partner && (partner->GetLayer() == CollisionLayer::Enemy || partner->GetLayer() == CollisionLayer::Boulder))
+            {
                 m_stateController->OnHurt();
+				ServiceLocator::GetSoundSystem().Play(5, 0.3f);
+            }
         }
     }
 
