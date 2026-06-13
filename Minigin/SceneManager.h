@@ -4,6 +4,7 @@
 #include <memory>
 #include "Scene.h"
 #include "Singleton.h"
+#include <functional>
 
 namespace dae
 {
@@ -20,10 +21,14 @@ namespace dae
 		void RemoveFlaggedObjects();
 		void SetDeletionPending() { m_hasDeletionsPending = true; }
 
+		void RequestTransition(std::function<void()> transition);
+		void FlushPendingTransition();
+
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
 		std::vector<std::unique_ptr<Scene>> m_scenes{};
+		std::function<void()> m_pendingTransition;
 		bool m_hasDeletionsPending = false;
 	};
 }

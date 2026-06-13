@@ -23,6 +23,7 @@ namespace dae
 
         GameObject* Acquire(glm::vec3 position, float direction);
         void Release(GameObject* boulder);
+        void ReturnAll();
 
     private:
         std::vector<GameObject*> m_pool;

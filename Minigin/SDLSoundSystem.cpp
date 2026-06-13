@@ -13,6 +13,7 @@ namespace dae
     {
         sound_id id;
         float volume;
+        bool loop{ false };
     };
 
     class SDLSoundSystem::SDLSoundSystemImpl
@@ -44,17 +45,27 @@ namespace dae
             m_cv.notify_all();
             m_thread.join();
 
-            //Seemingly gets cleaned up in minigin
-            /*for (auto& [id, clip] : m_audioclips)
+            if (m_musicTrack)
+            {
+                MIX_DestroyTrack(m_musicTrack);
+                m_musicTrack = nullptr;
+            }
+
+            for (auto& [id, clip] : m_audioclips)
             {
                 if (clip.pAudio)
+                {
                     MIX_DestroyAudio(clip.pAudio);
+                    clip.pAudio = nullptr;
+                }
             }
-            if (m_mixer)
-                MIX_DestroyMixer(m_mixer);*/
 
-            //MIX_Quit();
-			//SDL_QuitSubSystem(SDL_INIT_AUDIO);
+            if (m_mixer)
+            {
+                MIX_DestroyMixer(m_mixer);
+                m_mixer = nullptr;
+            }
+            MIX_Quit();
         }
 
         void Play(sound_id id, float volume)
@@ -62,6 +73,15 @@ namespace dae
             {
                 std::scoped_lock lock(m_queueMutex);
                 m_requestQueue.push({ id, volume });
+            }
+            m_cv.notify_one();
+        }
+
+        void PlayLooping(sound_id id, float volume)
+        {
+            {
+                std::scoped_lock lock(m_queueMutex);
+                m_requestQueue.push({ id, volume, true });
             }
             m_cv.notify_one();
         }
@@ -107,10 +127,33 @@ namespace dae
                 }
                 if (clip.pAudio && m_mixer)
                 {
-                    float finalVolume = m_isMuted ? 0.0f : request.volume;
-                    MIX_SetMixerGain(m_mixer, finalVolume);
-                    if (!MIX_PlayAudio(m_mixer, clip.pAudio))
-                        SDL_Log("MIX_PlayAudio failed: %s", SDL_GetError());
+                    if (request.loop)
+                    {
+                        if (!m_musicTrack)
+                        {
+                            m_musicTrack = MIX_CreateTrack(m_mixer);
+                            if (!m_musicTrack)
+                                SDL_Log("MIX_CreateTrack failed: %s", SDL_GetError());
+                        }
+                        if (m_musicTrack)
+                        {
+                            MIX_SetTrackAudio(m_musicTrack, clip.pAudio);
+                            MIX_SetTrackGain(m_musicTrack, request.volume);
+                            SDL_PropertiesID props = SDL_CreateProperties();
+                            constexpr Sint64 infiniteLoops{ -1 };
+                            SDL_SetNumberProperty(props, MIX_PROP_PLAY_LOOPS_NUMBER, infiniteLoops);
+                            if (!MIX_PlayTrack(m_musicTrack, props))
+                                SDL_Log("MIX_PlayTrack failed: %s", SDL_GetError());
+                            SDL_DestroyProperties(props);
+                        }
+                    }
+                    else
+                    {
+                        float finalVolume = m_isMuted ? 0.0f : request.volume;
+                        MIX_SetMixerGain(m_mixer, finalVolume);
+                        if (!MIX_PlayAudio(m_mixer, clip.pAudio))
+                            SDL_Log("MIX_PlayAudio failed: %s", SDL_GetError());
+                    }
                 }
             }
         }
@@ -121,6 +164,7 @@ namespace dae
         std::condition_variable_any m_cv;
         std::unordered_map<sound_id, AudioClip> m_audioclips;
         MIX_Mixer* m_mixer{ nullptr };
+        MIX_Track* m_musicTrack{ nullptr };
         std::jthread m_thread;
         std::atomic<bool> m_isMuted{ false };
     };
@@ -135,6 +179,11 @@ namespace dae
     void SDLSoundSystem::Play(sound_id id, float volume)
     {
         m_pImpl->Play(id, volume);
+    }
+
+    void SDLSoundSystem::PlayLooping(sound_id id, float volume)
+    {
+        m_pImpl->PlayLooping(id, volume);
     }
 
     void SDLSoundSystem::AddSound(sound_id id, const std::string& filePath)

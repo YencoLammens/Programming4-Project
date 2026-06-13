@@ -34,13 +34,21 @@ namespace dae
             return;
         }
 
-        if (m_enemies.empty()) return;
-
-        m_enemies.erase( std::remove_if(m_enemies.begin(), m_enemies.end(), [](const GameObject* e) { return e->IsMarkedForDeletion(); }),m_enemies.end());
+        m_enemies.erase(std::remove_if(m_enemies.begin(), m_enemies.end(), [](const GameObject* e) { return e->IsMarkedForDeletion(); }), m_enemies.end());
         if (m_enemies.empty())
         {
             m_levelComplete = true;
             m_transitionTimer = s_transitionDelay;
         }
+    }
+
+    void LevelManagerComponent::ClearAndReset()
+    {
+        for (auto* e : m_enemies)
+            if (e && !e->IsMarkedForDeletion())
+                e->MarkForDeletion();
+        m_enemies.clear();
+        m_levelComplete = false;
+        m_transitionTimer = -1.f;
     }
 }

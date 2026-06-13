@@ -14,7 +14,7 @@ namespace dae
 	{
 	public:
 		TextComponent(GameObject* owner, const std::string& text, Font* font);
-		virtual ~TextComponent() = default;
+		~TextComponent() override;
 		TextComponent(const TextComponent& other) = delete;
 		TextComponent(TextComponent&& other) = delete;
 		TextComponent& operator=(const TextComponent& other) = delete;

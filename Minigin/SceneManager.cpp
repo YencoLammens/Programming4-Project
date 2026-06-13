@@ -50,3 +50,18 @@ dae::Scene& dae::SceneManager::CreateScene()
 	m_scenes.emplace_back(new Scene());
 	return *m_scenes.back();
 }
+
+void dae::SceneManager::RequestTransition(std::function<void()> transition)
+{
+	m_pendingTransition = std::move(transition);
+}
+
+void dae::SceneManager::FlushPendingTransition()
+{
+	if (m_pendingTransition)
+	{
+		auto fn = std::move(m_pendingTransition);
+		m_pendingTransition = nullptr;
+		fn();
+	}
+}

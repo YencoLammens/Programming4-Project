@@ -13,5 +13,7 @@ namespace dae
         if (m_lives <= 0) return;
         --m_lives;
         NotifyObservers(make_sdbm_hash("PlayerDied"));
+        if (m_lives == 0)
+            NotifyObservers(make_sdbm_hash("GameOver"));
     }
 }

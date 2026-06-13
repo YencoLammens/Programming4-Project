@@ -13,6 +13,6 @@ namespace dae
     {
         m_score += points;
         NotifyObservers(make_sdbm_hash("PointsGained"));
-		ServiceLocator::GetSoundSystem().Play(2, 1.f);
+		ServiceLocator::GetSoundSystem().Play(2, 0.1f);
     }
 }

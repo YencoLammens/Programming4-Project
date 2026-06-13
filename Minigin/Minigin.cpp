@@ -86,6 +86,9 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 dae::Minigin::~Minigin()
 {
 	Renderer::GetInstance().Destroy();
+
+	ServiceLocator::RegisterSoundSystem(nullptr);
+
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
 	SDL_Quit();
@@ -127,6 +130,7 @@ void dae::Minigin::RunOneFrame()
 	SceneManager::GetInstance().Update(deltaTime);
 	ServiceLocator::GetCollisionManager().Update();
 	SceneManager::GetInstance().RemoveFlaggedObjects();
+	SceneManager::GetInstance().FlushPendingTransition();
 	Renderer::GetInstance().Render();
 
 #ifndef __EMSCRIPTEN__

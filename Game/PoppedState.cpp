@@ -5,6 +5,7 @@
 #include "PhysicsComponent.h"
 #include "AnimationComponent.h"
 #include "CollisionLayer.h"
+#include "ICollisionManager.h"
 #include "Transform.h"
 #include "EventId.h"
 #include "GameObject.h"
@@ -39,6 +40,33 @@ namespace dae
             auto pos = transform->GetLocalPosition();
             pos.y -= k_riseSpeed * deltaTime;
             pos.x += m_horizontalDir * k_horizontalSpeed * deltaTime;
+
+			if (auto* hitbox = controller->GetHitboxComponent()) //Horizontal collision with walls while rising (prevents enemy to fly out of the map on pop)   
+            {
+                const auto walls = ServiceLocator::GetCollisionManager().QueryLayer(CollisionLayer::Wall);
+                for (auto* wall : walls)
+                {
+                    const float charLeft = pos.x;
+                    const float charRight = pos.x + hitbox->GetWidth();
+                    const float charTop = pos.y;
+                    const float charBottom = pos.y + hitbox->GetHeight();
+
+                    const auto wallRect = wall->GetHitBox();
+                    const float wallLeft = wallRect.x;
+                    const float wallRight = wallRect.x + wallRect.width;
+                    const float wallTop = wallRect.y;
+                    const float wallBottom = wallRect.y + wallRect.height;
+
+                    if (charRight <= wallLeft || charLeft >= wallRight) continue;
+                    if (charBottom <= wallTop || charTop >= wallBottom) continue;
+
+                    if (charRight - wallLeft < wallRight - charLeft)
+                        pos.x -= charRight - wallLeft;
+                    else
+                        pos.x += wallRight - charLeft;
+                }
+            }
+
             transform->SetLocalPosition(pos);
 
             if (m_riseTimer >= m_riseDuration)

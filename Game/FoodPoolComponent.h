@@ -23,6 +23,7 @@ namespace dae
 
         GameObject* Acquire(glm::vec3 position);
         void Release(GameObject* pickup);
+        void ReturnAll();
 
     private:
         std::vector<GameObject*> m_pool;

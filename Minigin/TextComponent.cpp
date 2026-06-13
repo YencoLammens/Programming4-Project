@@ -17,6 +17,8 @@ dae::TextComponent::TextComponent(GameObject* owner, const std::string& text, Fo
 	}
 }
 
+dae::TextComponent::~TextComponent() = default;
+
 void dae::TextComponent::Update(float)
 {
 	if (m_needsUpdate)

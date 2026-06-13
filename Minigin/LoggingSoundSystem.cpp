@@ -25,6 +25,18 @@ namespace dae
 #endif
     }
 
+    void LoggingSoundSystem::PlayLooping(sound_id id, float volume)
+    {
+        m_pRealSoundSystem->PlayLooping(id, volume);
+#ifdef _WIN32
+        std::stringstream ss;
+        ss << "looping sound " << id << " at volume " << volume << "\n";
+        OutputDebugStringA(ss.str().c_str());
+#else
+        std::cout << "looping sound " << id << " at volume " << volume << "\n";
+#endif
+    }
+
     void LoggingSoundSystem::AddSound(sound_id id, const std::string& filePath)
     {
         m_pRealSoundSystem->AddSound(id, filePath);

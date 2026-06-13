@@ -25,7 +25,7 @@ namespace dae
 
 		void BindCommand(unsigned int controllerIdx, Controller::ControllerButton button, KeyState state, std::unique_ptr<Command> command);
 		void UnbindCommand(unsigned int controllerIdx, Controller::ControllerButton button, KeyState state);
-
+		void ClearAllBindings();
 	private:
 		Controller* GetOrCreateController(unsigned int index);
 

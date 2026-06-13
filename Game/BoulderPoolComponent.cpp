@@ -70,4 +70,10 @@ namespace dae
         boulder->GetComponent<BoulderComponent>()->SetActive(false);
         boulder->GetTransform()->SetLocalPosition({ k_boulderOffScreen, k_boulderOffScreen, 0.f });
     }
+
+    void BoulderPoolComponent::ReturnAll()
+    {
+        for (auto* obj : m_pool)
+            Release(obj);
+    }
 }

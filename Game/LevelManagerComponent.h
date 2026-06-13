@@ -19,6 +19,7 @@ namespace dae
         void FixedUpdate(float) override {}
 
         void RegisterEnemy(GameObject* enemy);
+        void ClearAndReset();
         void SetOnLevelComplete(std::function<void()> callback);
 
     private:

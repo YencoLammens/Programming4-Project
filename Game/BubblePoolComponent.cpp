@@ -63,4 +63,10 @@ namespace dae
         bubble->GetTransform()->SetLocalPosition({ k_offScreen, k_offScreen, 0.f });
         bubble->GetComponent<BubbleComponent>()->SetActive(false);
     }
+
+    void BubblePoolComponent::ReturnAll()
+    {
+        for (auto* obj : m_pool)
+            Release(obj);
+    }
 }

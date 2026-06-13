@@ -96,6 +96,12 @@ namespace dae
 			m_keyboardBindings.erase(it);
 	}
 
+	void InputManager::ClearAllBindings()
+	{
+		m_keyboardBindings.clear();
+		m_controllerBindings.clear();
+	}
+
 	Controller* InputManager::GetOrCreateController(unsigned int index)
 	{
 		while (m_controllers.size() <= index)

@@ -62,4 +62,10 @@ namespace dae
         pickup->GetTransform()->SetLocalPosition({ k_foodOffScreen, k_foodOffScreen, 0.f });
         pickup->GetComponent<PickupComponent>()->SetActive(false);
     }
+
+    void FoodPoolComponent::ReturnAll()
+    {
+        for (auto* obj : m_pool)
+            Release(obj);
+    }
 }

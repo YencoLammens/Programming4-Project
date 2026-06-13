@@ -19,7 +19,7 @@ namespace dae
     {
         if (auto* anim = controller->GetAnimationComponent())
             anim->Play(make_sdbm_hash("jump"));
-        ServiceLocator::GetSoundSystem().Play(6, 0.3f);
+        ServiceLocator::GetSoundSystem().Play(6, 0.1f);
     }
 
     std::unique_ptr<PlayerCharacterState> JumpingState::Update(PlayerStateController* controller, float deltaTime)

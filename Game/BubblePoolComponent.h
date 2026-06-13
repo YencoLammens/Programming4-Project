@@ -23,7 +23,8 @@ namespace dae
 
         GameObject* Acquire(glm::vec3 position, float direction);
         void Release(GameObject* bubble);
-
+        void ReturnAll();
+        
     private:
         std::vector<GameObject*> m_pool;
         int m_nextIndex{ 0 };

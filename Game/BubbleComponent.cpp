@@ -2,6 +2,8 @@
 #include "HitboxComponent.h"
 #include "BubblePoolComponent.h"
 #include "CollisionLayer.h"
+#include "ICollisionManager.h"
+#include "ServiceLocator.h"
 #include "EventId.h"
 #include "GameObject.h"
 #include "Transform.h"
@@ -49,6 +51,34 @@ namespace dae
             pos += m_velocity * deltaTime;
             if (m_travelTimer >= k_travelDuration)
                 m_traveling = false;
+
+            if (m_hitbox)
+            {
+                const auto walls = ServiceLocator::GetCollisionManager().QueryLayer(CollisionLayer::Wall);
+                for (auto* wall : walls)
+                {
+                    const float bubbleLeft = pos.x;
+                    const float bubbleRight = pos.x + m_hitbox->GetWidth();
+                    const float bubbleTop = pos.y;
+                    const float bubbleBottom = pos.y + m_hitbox->GetHeight();
+
+                    const auto wallRect = wall->GetHitBox();
+                    const float wallLeft = wallRect.x;
+                    const float wallRight = wallRect.x + wallRect.width;
+                    const float wallTop = wallRect.y;
+                    const float wallBottom = wallRect.y + wallRect.height;
+
+                    if (bubbleRight <= wallLeft || bubbleLeft >= wallRight) continue;
+                    if (bubbleBottom <= wallTop || bubbleTop >= wallBottom) continue;
+
+                    m_travelTimer = k_travelDuration; //float up as soon as it touches the wall
+
+                    if (bubbleRight - wallLeft < wallRight - bubbleLeft)
+                        pos.x -= bubbleRight - wallLeft;
+                    else
+                        pos.x += wallRight - bubbleLeft;
+                }
+            }
         }
         else
         {

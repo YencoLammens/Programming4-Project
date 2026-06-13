@@ -7,6 +7,7 @@ namespace dae
 {
     class HitboxComponent;
     class PlayerStateController;
+    class HealthComponent;
 
     class PlayerHitObserver final : public BaseComponent, public Observer
     {
@@ -26,6 +27,7 @@ namespace dae
 
     private:
         HitboxComponent* m_pHitbox;
+        HealthComponent* m_pHealth;
         PlayerStateController* m_stateController;
     };
 }

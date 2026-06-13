@@ -10,7 +10,7 @@ namespace dae
 	{
 	public:
 		CameraComponent(GameObject* owner, float viewportWidth, float viewportHeight, float levelWidth, float levelHeight);
-		~CameraComponent() override = default;
+		~CameraComponent() override;
 		CameraComponent(const CameraComponent&) = delete;
 		CameraComponent& operator=(const CameraComponent&) = delete;
 		CameraComponent(CameraComponent&&) = delete;
